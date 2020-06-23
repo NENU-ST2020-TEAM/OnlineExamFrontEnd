@@ -617,7 +617,7 @@
                 <el-input type="textarea" placeholder="请输入答案" v-model="answerWenda"></el-input>
             </div>
             <span slot="footer">
-                <el-button type="primary" @click="outputPaper=true; handInputShow=false">发布试卷</el-button>
+                <el-button type="primary" @click="outputPaper=true; selectShow=false; handInputShow=false">发布试卷</el-button>
             </span>
         </el-dialog>
 
@@ -1604,7 +1604,7 @@ export default {
             // this.peoLoading = true;
             console.log(reject);
         });
-        //试卷管理
+       //试卷管理
         this.$ajax({
             method: "post",
             url: "http://120.26.186.88:8080/paper/listAllPaper",
