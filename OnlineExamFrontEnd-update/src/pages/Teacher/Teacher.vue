@@ -1613,6 +1613,7 @@ export default {
             cache: false,
         }).then(resolve => {
             this.tableData1 = resolve.data;
+            console.log(resolve.data);
             //获取数组长度赋值给total
             this.total1 = resolve.data.length;
             // this.peoLoading = false;
@@ -1625,7 +1626,7 @@ export default {
         //题库管理
         this.$ajax({
             method: "post",
-            url: "http://47.103.10.220:8010/paperDetail/listAllPaperDetail",
+            url: "http://120.26.186.88:8080/paperDetail/listAllPaperDetail",
             dataType: "json",
             crossDomain: true,
             cache: false,
@@ -1634,7 +1635,7 @@ export default {
             //获取数组长度赋值给total
             this.total2 = resolve.data.length;
             // this.peoLoading = false;
-            console.log(this.total2);
+            console.log(resolve);
             // console.log(resolve.data);
         }, reject => {
             // this.peoLoading = true;
