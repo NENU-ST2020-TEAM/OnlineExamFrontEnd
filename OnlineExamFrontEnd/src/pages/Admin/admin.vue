@@ -8,18 +8,47 @@
                 <span>TESTONLINE</span>
                 </a>
             </div>
-            <router-link :to="userInfo.sno ? '/profile/info' : '/login'" class="profile-link">
+            <a href="javascript:void(0)" class="profile-link" @click="personInfor=true">
                 <div class="user-info">
-                    <p class="user-info-top">{{userInfor.username}}</p>
+                <p class="user-info-top" >{{userInfor.username}}</p>
                 </div>
                 <div class="profile_image">
-                    <img :src="require('../../common/imgs/profile.jpg')" alt="学生头像">
+                <img :src="require('../../assets/Teacher.jpg')" alt="学生头像">
+                <!--<img src="../../common/imgs/profile.jpg" alt="头像" v-else>-->
                 </div>
-                <div class="user-info">
-                    <p class="user-info-top">欢迎您：</p>
-                </div>
-            </router-link>
+            </a>
         </section>
+
+        <el-dialog title="个人信息" v-model="userInfor" :visible.sync="personInfor" :close-on-click-modal="false">
+            <img id="userHead" src="../../assets/Teacher.jpg" width="100px" height="100px" style="border-radius: 50px" />
+            <el-form  ref="userInfor" label-width="150px">
+                <el-form-item label="用户ID：">
+                <el-col :span="8">
+                    <span>{{userInfor.userId}}</span>
+                </el-col>
+                </el-form-item>
+                <el-form-item label="用户名：">
+                <el-col :span="8">
+                    <span>{{userInfor.username}}</span>
+                </el-col>
+                </el-form-item>
+                <el-form-item label="性别：">
+                <el-col :span="8">
+                    <span>{{userInfor.sex}}</span>
+                </el-col>
+                </el-form-item>
+                <el-form-item label="生日：">
+                <el-col :span="8">
+                    <span>{{userInfor.birthday}}</span>
+                </el-col>
+                </el-form-item>
+                <el-form-item label="权限：">
+                <el-col :span="8">
+                    <span>{{this.userPower}}</span>
+                </el-col>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
 
         <!-- 侧边栏(导航) -->
         <div id="aside">
@@ -32,7 +61,7 @@
                                                             noticeShow = false;
                                                             allScore = false;
                                                             allUser = false;
-                                                            allStudentScore = false;">
+                                                            allStudentScore = false">
                                 <i class="el-icon-user"></i>
                                 <span slot="title">试卷管理</span>
                             </el-menu-item>
@@ -41,7 +70,7 @@
                                                             noticeShow = false;
                                                             allScore = false;
                                                             allUser = false;
-                                                            allStudentScore = false;">
+                                                            allStudentScore = false">
                                 <i class="el-icon-tickets"></i>
                                 <span slot="title">题库管理</span>
                             </el-menu-item>
@@ -50,7 +79,7 @@
                                                             noticeShow = true;
                                                             allScore = false;
                                                             allUser = false;
-                                                            allStudentScore = false;">
+                                                            allStudentScore = false">
                                 <i class="el-icon-school"></i>
                                 <span slot="title">公告管理</span>
                             </el-menu-item>
@@ -59,7 +88,7 @@
                                                             noticeShow = false;
                                                             allScore = true;
                                                             allStudentScore = false;
-                                                            allUser = false;">
+                                                            allUser = false">
                                 <i class="el-icon-school"></i>
                                 <span slot="title">成绩管理</span>
                             </el-menu-item>
@@ -90,163 +119,40 @@
                         <el-col :span="5">
                             <el-button type="success" plain @click="searchPapers()">搜索</el-button>
                         </el-col>
-                        <el-col :span="9" style="text-align:right">
-                            <el-button type="success" plain @click="addPaperShow=true">新增试卷 </el-button>
-                        </el-col>
                     </el-row>
                 </div>
                 <el-table :data="tableData1.slice((currentPage1-1)*pagesize,currentPage1*pagesize)" style="width: 100%">
-                    <el-table-column align="center" type="index" label="序号"></el-table-column>
-                    <!-- 不显示ID -->
+                    <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
                     <!-- <el-table-column align="center" prop="paperId" label="试卷编号"></el-table-column> -->
-                    <el-table-column align="center" prop="paperName" label="试卷名称"></el-table-column>
-                    <el-table-column align="center" prop="operation" label="操作">
-                        <template slot-scope="scope">
-                            <el-col :span="11" style="text-align: right">
-                                <el-button type="success" 
-                                    icon="el-icon-edit" 
-                                    title="修改试卷名称" 
-                                    circle 
-                                    plain
-                                    @click="changePaperName(scope.$index, scope.row);"></el-button>
-                            </el-col>
-                            <el-col :span="7">
-                                <el-button type="danger" 
-                                icon="el-icon-delete" 
-                                title="删除" 
-                                circle 
-                                plain
-                                @click="deletePaperName(scope.$index, scope.row);"></el-button>
-                            </el-col>
-                        </template>
-                        <!-- <el-button type="danger" icon="el-icon-delete" title="删除" @click="dele" plain>删除</el-button> -->
-                    </el-table-column>
+                    <el-table-column align="center" prop="paperName" label="试卷名称"></el-table-column>    
                 </el-table>
                 <div class="pagination">
-                    <el-pagination background layout="prev, pager, next" :total="total1" @current-change="current_change1" class="paginate"></el-pagination>
+                        <el-pagination background layout="prev, pager, next" :total="total1" @current-change="current_change1" class="paginate"></el-pagination>
                 </div>
             </el-card>
-
             <!-- 题库管理 -->
             <el-card v-show="questionShow">
-                <div slot="header" class="clearfix">
-                    <el-row :gutter="10">
-                        <el-col :span="8">
-                            <el-input v-model="searchQuestion" placeholder="请输入需要搜索的试卷名称"></el-input>
-                        </el-col>
-                        <el-col :span="5">
-                            <el-button type="success" plain @click="searchQuestionBtn()">搜索</el-button>
-                        </el-col>
-                        <el-col :span="9" style="text-align:right">
-                            <el-button type="success" plain @click="addQuestionShow=true">新增题目</el-button>
-                        </el-col>
-                    </el-row>
-                </div>
-                <el-table :data="tableData2.slice((currentPage2-1)*pagesize,currentPage2*pagesize)" style="width: 100%" class="peoTable">
-                    <el-table-column align="center" prop="operation" label="操作">
-                        <template slot-scope="scope">    
-                            <el-button type="danger" 
-                                icon="el-icon-delete" 
-                                title="删除" 
-                                circle 
-                                plain
-                                @click="deleteQuestion(scope.$index, scope.row);"></el-button>
-                        </template>
-                    </el-table-column>
+                <el-table :data="tableData2.slice((currentPage2-1)*pagesize,currentPage2*pagesize)" style="width: 100%" id="peoTable">
                     <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
-                    <!-- 不显示ID -->
-                    <!-- <el-table-column align="center" prop="paperDetailId" label="题目编号"></el-table-column> -->
-                    <el-table-column align="center" prop="exerciseType" label="类型" width="70"></el-table-column>
-                    <el-table-column align="center" prop="content" label="内容" width="300"></el-table-column>
-                    <el-table-column align="center" prop="typeA" label="选项A" width="105"></el-table-column>
-                    <el-table-column align="center" prop="typeB" label="选项B" width="105"></el-table-column>
-                    <el-table-column align="center" prop="typeC" label="选项C" width="105"></el-table-column>
-                    <el-table-column align="center" prop="typeDr" label="选项D" width="105"></el-table-column>
-                    <el-table-column align="center" prop="answer" label="答案/采分点1" width="105"></el-table-column>
-                    <el-table-column align="center" prop="answer2" label="采分点2" width="105"></el-table-column>
-                    <el-table-column align="center" prop="answer3" label="采分点3" width="105"></el-table-column>
-                    <el-table-column align="center" prop="score" label="分值" width="50"></el-table-column>
+                    <!-- <el-table-column align="center" prop="exerciseId" label="题目编号"></el-table-column> -->
+                    <el-table-column align="center" prop="content" label="题目"></el-table-column>
+                    <el-table-column align="center" prop="exerciseType" label="题型"></el-table-column>
+                    <el-table-column align="center" prop="paperDetailId" label="所在试卷编号"></el-table-column>
+                    <el-table-column align="center" prop="answer" label="正确答案"></el-table-column>
+                    <el-table-column align="center" prop="score" label="分值"></el-table-column>
                 </el-table>
                 <div class="pagination">
                     <el-pagination background layout="prev, pager, next" :total="total2" @current-change="current_change2" class="paginate"></el-pagination>
                 </div>
             </el-card>
-
-            <!-- addQuestion -->
-            <el-dialog :visible.sync="addQuestionShow" title="输入题目内容" center>
-                <el-form :model="handQuestionInput" ref="handQuestionInput">
-                    <el-form-item label="题目类型" prop="questionType">
-                        <el-select v-model="handQuestionInput.questionType">
-                            <el-option label="单选题" value="0"></el-option>
-                            <el-option label="判断题" value="1"></el-option>
-                            <el-option label="填空题" value="2"></el-option>
-                            <el-option label="主观问答题" value="3"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="题目内容" prop="questionContext">
-                        <el-input type="textarea" placeholder="请输入题目内容" v-model="handQuestionInput.questionContext"></el-input>
-                    </el-form-item>
-                    <el-form-item label="选项A" prop="choiceA">
-                        <el-col :span="10">
-                            <el-input v-model="handQuestionInput.choiceA" placeholder="请输入A选项"></el-input>
-                        </el-col>
-                    </el-form-item>
-                    <el-form-item label="选项B" prop="choiceB">
-                        <el-col :span="10">
-                            <el-input v-model="handQuestionInput.choiceB" placeholder="请输入B选项"></el-input>
-                        </el-col>
-                    </el-form-item>
-                    <el-form-item label="选项C" prop="choiceC">
-                        <el-col :span="10">
-                            <el-input v-model="handQuestionInput.choiceC" placeholder="请输入C选项"></el-input>
-                        </el-col>
-                    </el-form-item>
-                    <el-form-item label="选项D" prop="choiceD">
-                        <el-col :span="10">
-                            <el-input v-model="handQuestionInput.choiceD" placeholder="请输入D选项"></el-input>
-                        </el-col>
-                    </el-form-item>
-                    <el-form-item label="客观题正确答案" prop="questionAnswerKeguan">
-                        <el-col :span="7">
-                            <el-input v-model="handQuestionInput.questionAnswerKeguan" placeholder="请输入正确答案"></el-input>
-                        </el-col>
-                    </el-form-item>
-                    <el-form-item label="主观题采分点" prop="questionAnswerZhuguan1">
-                        <el-col :span="7">
-                            <el-input v-model="handQuestionInput.questionAnswerZhuguan1" placeholder="采分点1"></el-input>
-                        </el-col>
-                    </el-form-item>
-                    <el-form-item label="主观题采分点" prop="questionAnswerZhuguan2">
-                        <el-col :span="7">
-                            <el-input v-model="handQuestionInput.questionAnswerZhuguan2" placeholder="采分点2"></el-input>
-                        </el-col>
-                    </el-form-item>
-                    <el-form-item label="主观题采分点" prop="questionAnswerZhuguan3">
-                        <el-col :span="7">
-                            <el-input v-model="handQuestionInput.questionAnswerZhuguan3" placeholder="采分点3"></el-input>
-                        </el-col>
-                    </el-form-item>
-                    <el-form-item prop="questionCount">
-                        <span>分值</span>
-                        <el-slider v-model="handQuestionInput.questionCount" :max="100"></el-slider>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-col :span="24" style="text-align:right">
-                            <el-button type="success" icon="el-icon-check" @click="addQuestionShow=false; addQuestion()">确认添加</el-button>
-                            <el-button type="primary" icon="el-icon-refresh-right" @click="reset('handQuestionInput')">重置</el-button>
-                            <el-button type="danger" icon="el-icon-close" @click="addQuestionShow=false; reset('handQuestionInput')">取消</el-button>
-                        </el-col>
-                    </el-form-item>
-                </el-form>
-            </el-dialog>
-
             <!-- 公告管理 -->
             <el-card v-show="noticeShow">
                 <div slot="header" class="clearfix" style="text-align: right">
                     <el-button type="success" plain @click="addNoticeShow=true">新增公告</el-button>
                 </div>
-                <el-table :data="tableData3.slice((currentPage3-1)*pagesize,currentPage3*pagesize)" style="width: 100%" class="peoTable">
-                    <el-table-column width="80px" align="center" prop="noticeId" label="公告编号"></el-table-column>
+                <el-table :data="tableData3.slice((currentPage3-1)*pagesize,currentPage3*pagesize)" style="width: 100%" id="peoTable">
+                    <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
+                    <!-- <el-table-column width="80px" align="center" prop="noticeId" label="公告编号"></el-table-column> -->
                     <el-table-column width="80px" align="center" prop="userId" label="发布者ID"></el-table-column>
                     <el-table-column align="center" prop="title" label="标题"></el-table-column>
                     <el-table-column align="center" prop="content" label="内容"></el-table-column>
@@ -260,52 +166,73 @@
             <!-- 成绩 -->
             <el-card v-show="allScore">
                 <el-table :data="tableData4.slice((currentPage4-1)*pagesize,currentPage4*pagesize)" style="width: 100%">
-                    <el-table-column align="center" prop="paperId" label="试卷编号"></el-table-column>
+                    <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
+                    <!-- <el-table-column align="center" prop="paperId" label="试卷编号"></el-table-column> -->
                     <el-table-column align="center" prop="paperName" label="试卷名称"></el-table-column>
-                    <el-table-column align="center" prop="operation" label="操作">
+                    <el-table-column align="center" prop="operation" label="所有考生成绩" width="120">
                         <template slot-scope="scope">
                             <el-button type="success" 
                                 icon="el-icon-search" 
-                                title="查看本卷考生成绩" 
+                                title="查看本卷所有考生成绩" 
                                 circle 
                                 plain
                                 @click="showAllScore(scope.$index, scope.row);"></el-button>
                         </template>
                         <!-- <el-button type="danger" icon="el-icon-delete" title="删除" @click="dele" plain>删除</el-button> -->
+                    </el-table-column> 
+                    <el-table-column align="center" prop="operation" label="不及格考生成绩" width="120">
+                        <template slot-scope="scope">
+                            <el-button type="success" 
+                                icon="el-icon-search" 
+                                title="查看本卷不及格考生成绩" 
+                                circle 
+                                plain
+                                @click="searchfailScores(scope.$index, scope.row);"></el-button>
+                        </template>
+                        <!-- <el-button type="danger" icon="el-icon-delete" title="删除" @click="dele" plain>删除</el-button> -->
                     </el-table-column>
-                    <div class="pagination">
-                        <el-pagination background layout="prev, pager, next" :total="total4" @current-change="current_change4" class="paginate"></el-pagination>
-                    </div>
+                    <el-table-column align="center" prop="operation" label="及格考生成绩" width="120">
+                        <template slot-scope="scope">
+                            <el-button type="success" 
+                                icon="el-icon-search" 
+                                title="查看本卷及格考生成绩" 
+                                circle 
+                                plain
+                                @click="searchScores(scope.$index, scope.row);"></el-button>
+                        </template>
+                        <!-- <el-button type="danger" icon="el-icon-delete" title="删除" @click="dele" plain>删除</el-button> -->
+                    </el-table-column>
                 </el-table>
+                <div class="pagination">
+                    <el-pagination background layout="prev, pager, next" :total="total4" @current-change="current_change4" class="paginate"></el-pagination>
+                </div>
             </el-card>
 
             <!-- 根据试卷列出考生成绩信息 -->
             <el-card v-show="allStudentScore">
                 <el-table :data="tableData5.slice((currentPage5-1)*pagesize,currentPage5*pagesize)" style="width: 100%">
-                    <el-table-column width="130px" align="center" prop="paperId" label="试卷编号"></el-table-column>
-                    <el-table-column align="center" prop="paperName" label="试卷名称"></el-table-column>
-                    <el-table-column width="130px" align="center" prop="userId" label="学生学号"></el-table-column>
-                    <el-table-column width="130px" align="center" prop="username" label="学生姓名"></el-table-column>
-                    <el-table-column width="130px" align="center" prop="mark" label="学生成绩"></el-table-column>
-                    <div class="pagination">
+                    <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
+                    <el-table-column align="center" prop="userId" label="学生学号"></el-table-column>
+                    <el-table-column align="center" prop="username" label="学生姓名"></el-table-column>
+                    <el-table-column align="center" prop="mark" label="学生成绩"></el-table-column>    
+                </el-table>
+                <div class="pagination">
                         <el-pagination background layout="prev, pager, next" :total="total5" @current-change="current_change5" class="paginate"></el-pagination>
                     </div>
-                </el-table>
             </el-card>
-
+            
             <!-- 列出所有用户信息 -->
             <el-card v-show="allUser">
                 <el-table :data="tableData6.slice((currentPage6-1)*pagesize,currentPage6*pagesize)" style="width: 100%">
-                    <el-table-column width="100px" align="center" prop="userId" label="用户ID"></el-table-column>
+                    <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
+                    <el-table-column align="center" prop="userId" label="用户ID"></el-table-column>
                     <el-table-column align="center" prop="username" label="用户名"></el-table-column>
-                    <el-table-column width="100px" align="center" prop="password" label="密码"></el-table-column>
-                    <el-table-column width="100px" align="center" prop="birthday" label="生日"></el-table-column>
-                    <el-table-column width="100px" align="center" prop="sex" label="性别"></el-table-column>
-                    <el-table-column width="100px" align="center" prop="power" label="权限"></el-table-column>
-                    <el-table-column width="100px" align="center" prop="image" label="头像"></el-table-column>
+                    <el-table-column align="center" prop="birthday" label="生日"></el-table-column>
+                    <el-table-column align="center" prop="sex" label="性别"></el-table-column>
+                    <el-table-column align="center" prop="power" label="权限"></el-table-column>
                     <el-table-column align="center" prop="operation" label="操作">
                         <template slot-scope="scope">
-                            <el-col :span="10">
+                            <el-col :span="13">
                                 <el-button type="danger" 
                                 icon="el-icon-delete" 
                                 title="删除" 
@@ -313,7 +240,7 @@
                                 plain
                                 @click="deleteUser(scope.$index, scope.row);"></el-button>
                             </el-col>
-                            <el-col :span="10">
+                            <el-col :span="8">
                                 <el-button type="success" 
                                     icon="el-icon-edit" 
                                     title="修改用户限权" 
@@ -322,57 +249,20 @@
                                     @click="updateUserPower(scope.$index, scope.row);"></el-button>
                             </el-col>
                         </template>
-                    </el-table-column>
-                    <div class="pagination">
-                        <el-pagination background layout="prev, pager, next" :total="total6" @current-change="current_change6" class="paginate"></el-pagination>
-                    </div>
-                </el-table>
-            </el-card>
-
-            <!-- 题库选题 用表格列出来所有的题目 进行选择-->
-            <el-card v-show="selectQuestion" title="选择题目">
-                <el-table :data="tableData7.slice((currentPage7-1)*pagesize,currentPage7*pagesize)" style="width: 100%" class="peoTable">
-                    <el-table-column align="center" prop="operation" label="操作">
-                        <template slot-scope="scope">    
-                            <el-button type="primary" 
-                                icon="el-icon-plus" 
-                                title="添加"  
-                                plain
-                                @click="sureAddQuestion(scope.$index, scope.row);"></el-button>
-                        </template>
-                    </el-table-column>
-                    <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
-                    <!-- 不显示ID -->
-                    <!-- <el-table-column align="center" prop="paperDetailId" label="ID" width="45"></el-table-column> -->
-                    <el-table-column align="center" prop="exerciseType" label="类型" width="50"></el-table-column>
-                    <el-table-column align="center" prop="content" label="内容" width="300"></el-table-column>
-                    <el-table-column align="center" prop="typeA" label="选项A"></el-table-column>
-                    <el-table-column align="center" prop="typeB" label="选项B"></el-table-column>
-                    <el-table-column align="center" prop="typeC" label="选项C"></el-table-column>
-                    <el-table-column align="center" prop="typeDr" label="选项D"></el-table-column>
-                    <el-table-column align="center" prop="answer" label="答案/采分点1"></el-table-column>
-                    <el-table-column align="center" prop="answer2" label="采分点2"></el-table-column>
-                    <el-table-column align="center" prop="answer3" label="采分点3"></el-table-column>
-                    <el-table-column align="center" prop="score" label="分值"></el-table-column>
+                    </el-table-column>    
                 </el-table>
                 <div class="pagination">
-                    <el-pagination background layout="prev, pager, next" :total="total7" @current-change="current_change7" class="paginate"></el-pagination>
-                </div>
-                <div style="text-align: right">
-                    <el-button type="primary" @click="selectQuestion=false;
-                                                        allPaper = true;
-                                                        selectShow=true;">添加完成</el-button>
+                        <el-pagination background layout="prev, pager, next" :total="total6" @current-change="current_change6" class="paginate"></el-pagination>
                 </div>
             </el-card>
-
         </el-main>
 
         <!-- 新增公告 -->
-        <el-dialog id="addNotice" :visible.sync="addNoticeShow">
+        <el-dialog id="addNotice" :visible="addNoticeShow" @close="addNoticeShow=false;reset('addNoticeInfor')">
             <el-form :model="addNoticeInfor" ref="addNoticeInfor" label-width="150px">
                 <el-form-item label="标题：" prop="title">
                     <el-col :span="8">
-                        <el-input v-model="addNoticeInfor.title" placeholder="请输入标题"></el-input>
+                        <el-input v-model="addNoticeInfor.title" placeholder="请输入标题" autocomplete="off"></el-input>
                     </el-col>
                 </el-form-item>
                 <el-form-item label="内容：" prop="content">
@@ -385,308 +275,13 @@
                         </el-input>
                     </el-col>
                 </el-form-item>
-                <el-form-item>
+                <el-form-item id="slotBtn">
                     <el-button type="success" icon="el-icon-check" @click="addNoticeShow=false; submiaddNotice()">确认修改</el-button>
                     <el-button type="primary" icon="el-icon-refresh-right" @click="reset('addNoticeInfor')">重置</el-button>
                     <el-button type="danger" icon="el-icon-close" @click="addNoticeShow=false; reset('addNoticeInfor')">取消</el-button>
                 </el-form-item>
             </el-form>
         </el-dialog>
-
-        <!-- 新增试卷 -->
-        <el-dialog id="addPaper" title="请选择出题方式" :visible.sync="addPaperShow" width="20%" center>
-            <div>
-                <el-row>
-                    <el-col :span="24" style="text-align:center">
-                        <el-button type="info" plain icon="el-icon-thumb" @click="handInputName=true;
-                                addPaperShow=false">手动录入</el-button>
-                    </el-col>
-                </el-row>
-                <el-row style="top:10px">
-                    <el-col :span="24" style="text-align:center">
-                    <el-button type="info" plain icon="el-icon-check" @click="selectInputName=true;
-                            addPaperShow=false">题库选题</el-button>
-                    </el-col>
-                </el-row>
-            </div>
-            <span slot="footer" class="dialog-footer"></span>
-        </el-dialog>
-
-        <!-- 手动录入 -->
-            <!-- 输入试卷名 -->
-        <el-dialog class="nameInput" :visible.sync="handInputName">
-            <el-form :model="handPaperName" ref="handPaperName" label-width="150px">
-                <el-form-item label="试卷名称：" prop="paperNameHand">
-                    <el-col :span="17">
-                        <el-input v-model="handPaperName.paperNameHand" placeholder="请输入试卷名称"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="success" icon="el-icon-check" @click="handInputName=false;handInputShow=true;subPaperName1();">确认增加</el-button>
-                    <el-button type="primary" icon="el-icon-refresh-right" @click="reset('handPaperName')">重置</el-button>
-                    <el-button type="danger" icon="el-icon-close" @click="handInputName=false; addPaperShow=true; reset('handPaperName')">取消</el-button>
-                </el-form-item>
-            </el-form>
-        </el-dialog>
-            <!-- 显示试卷 -->
-        <el-dialog :visible.sync="handInputShow" width="60%">
-            <el-row>
-                <el-col :span="24" style="text-align:center">
-                    <!-- <span>hhhhhhh</span> -->
-                    <span>{{this.handPaperName.paperNameHand}}</span>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="24" style="text-align:right">
-                    <el-button type="success" class="inputQue" @click="handQuestion=true">录入题目</el-button>
-                </el-col>
-            </el-row>
-            <!-- 单选 -->
-            <div v-for="item in questionDanxuan" :key="item.id">
-                 <p style="margin-top: 10px; margin-down: 5px;">
-                     <span>{{item.index}}. </span>
-                     <span>{{item.content}}</span>
-                </p>
-                <el-radio-group 
-                    v-model="item.id"
-                    @change="handleRadioChange(item.index,item.paperDetailId)">
-                    <el-radio label="A">A.{{item.typeA}}</el-radio>
-                    <el-radio label="B">B.{{item.typeB}}</el-radio>
-                    <el-radio label="C">C.{{item.typeC}}</el-radio>
-                    <el-radio label="D">D.{{item.typeD}}</el-radio>
-                </el-radio-group>
-            </div>
-            <!-- 判断 -->
-            <div v-for="item in questionPanduan" :key="item.id">
-                <p style="margin-top: 10px; margin-down: 5px;">
-                     <span>{{item.index}}. </span>
-                     <span>{{item.content}}</span>
-                </p>
-                <el-radio-group 
-                    v-model="item.id"
-                    @change="handleRadioChange(item.index,item.paperDetailId)">
-                    <el-radio label="A">A.{{item.typeA}}</el-radio>
-                    <el-radio label="B">B.{{item.typeB}}</el-radio>
-                </el-radio-group>
-            </div>
-            <!-- 填空 -->
-            <div v-for="item in questionTiankong" v-bind:key="item.id">
-                <p style="margin-top: 10px; margin-down: 5px;">
-                     <span>{{item.index}}. </span>
-                     <span>{{item.content}}</span>
-                </p>
-                <el-input type="text" placeholder="请输入答案" v-model="answerTiankong"></el-input>
-            </div>
-            <!-- 问答 -->
-            <div v-for="item in questionWenda" v-bind:key="item.id">
-                <p style="margin-top: 10px; margin-down: 5px;">
-                     <span>{{item.index}}. </span>
-                     <span>{{item.content}}</span>
-                </p>
-                <el-input type="textarea" placeholder="请输入答案" v-model="answerWenda"></el-input>
-            </div>
-            <span slot="footer">
-                <el-button type="primary" @click="outputPaper=true; handInputShow=false">发布试卷</el-button>
-            </span>
-        </el-dialog>
-        <!-- 设定考试时长 -->
-        <el-dialog :visible.sync="outputPaper" width="50%">
-            <el-form :model="outputTime" ref="outputTime">
-                <el-form-item label="试卷有效时间[起始]:">
-                    <el-col :span="6" style="text-align: center;">
-                        <el-date-picker type="date" placeholder="选择日期" 
-                                        value-format="yyyy年MM月dd日"
-                                        v-model="outputTime.beginDate" 
-                                        style="width: 100%;"></el-date-picker>
-                    </el-col>
-                    <el-col class="line" :span="2" style="text-align: center;">-</el-col>
-                    <el-col :span="6">
-                        <el-time-picker placeholder="选择时间" 
-                                        value-format="hh时mm分ss秒"
-                                        v-model="outputTime.beginTime" 
-                                        style="width: 100%;"></el-time-picker>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="试卷有效时间[截至]:">
-                    <el-col :span="6" style="text-align: center;">
-                        <el-date-picker type="date" placeholder="选择日期" 
-                                        value-format="yyyy年MM月dd日"
-                                        v-model="outputTime.endDate" 
-                                        style="width: 100%;"></el-date-picker>
-                    </el-col>
-                    <el-col class="line" :span="2" style="text-align: center;">-</el-col>
-                    <el-col :span="6">
-                        <el-time-picker placeholder="选择时间" 
-                                    value-format="hh时mm分ss秒"
-                                    v-model="outputTime.endTime" 
-                                    style="width: 100%;"></el-time-picker>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="考试时长" prop="duration">
-                    <el-col :span="6">
-                        <el-input v-model="outputTime.duration" placeholder="输入时长"></el-input>
-                    </el-col>
-                    <el-col :span="2" style="text-align: center;">
-                        <span>分钟</span>
-                    </el-col>
-                </el-form-item>
-                <el-form-item>
-                    <el-col :span="24" style="text-align:right">
-                        <el-button type="success" icon="el-icon-check" @click="outputPaper=false; sureSubmit()">确认发布</el-button>
-                        <el-button type="danger" icon="el-icon-close" @click="outputPaper=false">取消</el-button>
-                    </el-col>
-                </el-form-item>
-            </el-form>
-        </el-dialog>
-            <!-- 手动输入题目 -->
-        <el-dialog :visible.sync="handQuestion" title="输入题目内容" center>
-            <el-form :model="handQuestionInput" ref="handQuestionInput">
-                <el-form-item label="题目类型" prop="questionType">
-                    <el-select v-model="handQuestionInput.questionType">
-                        <el-option label="单选题" value="0"></el-option>
-                        <el-option label="判断题" value="1"></el-option>
-                        <el-option label="填空题" value="2"></el-option>
-                        <el-option label="主观问答题" value="3"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="题目内容" prop="questionContext">
-                    <el-input type="textarea" placeholder="请输入题目内容" v-model="handQuestionInput.questionContext"></el-input>
-                </el-form-item>
-                <el-form-item label="选项A" prop="choiceA">
-                    <el-col :span="10">
-                        <el-input v-model="handQuestionInput.choiceA" placeholder="请输入A选项"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="选项B" prop="choiceB">
-                    <el-col :span="10">
-                        <el-input v-model="handQuestionInput.choiceB" placeholder="请输入B选项"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="选项C" prop="choiceC">
-                    <el-col :span="10">
-                        <el-input v-model="handQuestionInput.choiceC" placeholder="请输入C选项"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="选项D" prop="choiceD">
-                    <el-col :span="10">
-                        <el-input v-model="handQuestionInput.choiceD" placeholder="请输入D选项"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="客观题正确答案" prop="questionAnswerKeguan">
-                    <el-col :span="7">
-                        <el-input v-model="handQuestionInput.questionAnswerKeguan" placeholder="请输入正确答案"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="主观题采分点" prop="questionAnswerZhuguan1">
-                    <el-col :span="7">
-                        <el-input v-model="handQuestionInput.questionAnswerZhuguan1" placeholder="采分点1"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="主观题采分点" prop="questionAnswerZhuguan2">
-                    <el-col :span="7">
-                        <el-input v-model="handQuestionInput.questionAnswerZhuguan2" placeholder="采分点2"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="主观题采分点" prop="questionAnswerZhuguan3">
-                    <el-col :span="7">
-                        <el-input v-model="handQuestionInput.questionAnswerZhuguan3" placeholder="采分点3"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item prop="questionCount">
-                    <span>分值</span>
-                    <el-slider v-model="handQuestionInput.questionCount" :max="100"></el-slider>
-                </el-form-item>
-                <el-form-item>
-                    <el-col :span="24" style="text-align:right">
-                        <el-button type="success" icon="el-icon-check" @click="handQuestion=false; submihandQuestion()">确认录入</el-button>
-                        <el-button type="primary" icon="el-icon-refresh-right" @click="reset('handQuestionInput')">重置</el-button>
-                        <el-button type="danger" icon="el-icon-close" @click="handQuestion=false; reset('handQuestionInput')">取消</el-button>
-                    </el-col>
-                </el-form-item>
-            </el-form>
-        </el-dialog>
-
-
-        <!-- 题库选题 -->
-        <el-dialog id="selectInput" :visible.sync="selectInputName">
-            <el-form :model="selectPaperName" ref="selectPaperName" label-width="150px">
-                <el-form-item label="试卷名称：" prop="paperNameSelect">
-                    <el-col :span="17">
-                        <el-input v-model="selectPaperName.paperNameSelect" placeholder="请输入试卷名称"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="success" icon="el-icon-check" @click="selectInputName=false;selectShow=true;subPaperName2()">确认增加</el-button>
-                    <el-button type="primary" icon="el-icon-refresh-right" @click="reset('selectPaperName')">重置</el-button>
-                    <el-button type="danger" icon="el-icon-close" @click="selectInputName=false; addPaperShow=true; reset('selectPaperName')">取消</el-button>
-                </el-form-item>
-            </el-form>
-        </el-dialog>
-        <!-- 显示试卷 -->
-        <el-dialog :visible.sync="selectShow" width="60%">
-            <el-row>
-                <el-col :span="24" style="text-align:center">
-                    <!-- <span>hhhhhhh</span> -->
-                    <span>{{this.selectPaperName.paperNameSelect}}</span>
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="24" style="text-align:right">
-                    <el-button type="success" class="inputQue" @click="selectQuestion=true; 
-                                                                        selectShow=false;
-                                                                        allPaper=false;
-                                                                        getAllQuestion()">题库选题</el-button>
-                </el-col>
-            </el-row>
-            <!-- 单选 -->
-            <div v-for="item in questionDanxuan" :key="item.id" class="showPaper">
-                <p style="margin-top: 10px; margin-down: 5px;">
-                    <span>{{item.id}}. </span>
-                    <span>{{item.content}}</span>
-                </p>
-                <el-radio-group 
-                    v-model="item.id"
-                    @change="handleRadioChange(item.index,item.paperDetailId)">
-                    <el-radio label="A">A.{{item.typeA}}</el-radio>
-                    <el-radio label="B">B.{{item.typeB}}</el-radio>
-                    <el-radio label="C">C.{{item.typeC}}</el-radio>
-                    <el-radio label="D">D.{{item.typeD}}</el-radio>
-                </el-radio-group>
-            </div>
-            <!-- 判断 -->
-            <div v-for="item in questionPanduan" :key="item.id" class="showPaper">
-                <p style="margin-top: 10px; margin-down: 5px;">
-                    <span>{{item.id}}. </span>
-                    <span>{{item.content}}</span>
-                </p>
-                <el-radio-group 
-                    v-model="item.id"
-                    @change="handleRadioChange(item.index,item.paperDetailId)">
-                    <el-radio label="A">A.{{item.typeA}}</el-radio>
-                    <el-radio label="B">B.{{item.typeB}}</el-radio>
-                </el-radio-group>
-            </div>
-            <!-- 填空 -->
-            <div v-for="item in questionTiankong" v-bind:key="item.id">
-                <p style="margin-top: 10px; margin-down: 5px;">
-                    <span>{{item.id}}. </span>
-                    <span>{{item.content}}</span>
-                </p>
-                <el-input type="text" placeholder="请输入答案" v-model="answerTiankong"></el-input>
-            </div>
-            <!-- 问答 -->
-            <div v-for="item in questionWenda" v-bind:key="item.id" class="showPaper">
-                <p style="margin-top: 10px; margin-down: 5px;">
-                    <span>{{item.id}}. </span>
-                    <span>{{item.content}}</span>
-                </p>
-                <el-input type="textarea" placeholder="请输入答案" v-model="answerWenda"></el-input>
-            </div>
-            <span slot="footer">
-                <el-button type="primary" @click="outputPaper=true; handInputShow=false">发布试卷</el-button>
-            </span>
-        </el-dialog>
-        
     </div>
 </template>
 
@@ -701,6 +296,7 @@ export default {
         return {
             sno:this.$store.state.userInfo.sno,
             isSelect:false,
+            personInfor: false,
             //一页表中的数据记录条数
             pagesize: 10,
             //试卷管理
@@ -711,79 +307,18 @@ export default {
             total1: 0,
             //查询
             searchPaper: '',
-            //新增试卷
-            addPaperShow: false,
-            handInputShow: false,
-            handInputName: false,
-            handPaperName: [{
-                paperNameHand: ''
-            }],
-            handQuestion: false,
-            handQuestionInput: [{
-                questionType: '',
-                questionContext: '',
-                choiceA: '',
-                choiceB: '',
-                choiceC: '',
-                choiceD: '',
-                questionAnswerKeguan: '',
-                questionAnswerZhuguan1: '',
-                questionAnswerZhuguan2: '',
-                questionAnswerZhuguan3: '',
-                questionCount: ''
-            }],
-            questionDanxuan: [],
-            questionTiankong: [],
-            questionPanduan: [],
-            questionWenda: [],
-            outputPaper: false,
-            outputTime: [{
-                beginDate: '',
-                endDate: '',
-                beginTime: '',
-                endTime: '',
-                duration: '',
-            }],            
-        
-            selectShow: false,
-            selectInputName: false,
-            selectQuestion: false,
-            selectPaperName: [{
-                paperNameSelect: ''
-            }],
-
-            paperIDback: 100000,
-            questionDetail: 100000,
 
             //题库管理
             tableData2: [],
-            tableData7: [],
             questionShow: false,
             //分页
             currentPage2: 1,
             total2: 0,
-            currentPage7: 1,
-            total7: 0,
-            searchQuestion: '',
-            //新增题目
-            addQuestionShow: false,
-            addQuestionInfor: [{
-                    paperIdStr: '',
-                    exerciseTypeStr: '',
-                    exerciseIdStr: '',
-                    contentStr: '',
-                    typeAStr: '',
-                    typeBStr: '',
-                    typeCStr: '',
-                    typeDStr: '',
-                    answerStr: '',
-                    scoreStr: '',
-                }],
-
+            
             //公告管理
             tableData3: [],
             noticeShow: false,
-            //新增公告
+            //新增
             addNoticeShow: false,
             addNoticeInfor: [{
                 title: '',
@@ -811,7 +346,8 @@ export default {
             currentPage6: 1,
             total6: 0,
             //用户信息
-            userInfor: []
+            userInfor: [],
+            userPower: "",
 
         }
     },
@@ -824,6 +360,10 @@ export default {
       ...mapGetters(['unreadMsgCount'])
     },
     methods: {
+        //重置
+        reset(refname) {
+            this.$refs[refname].resetFields()
+        },
         //分页
         current_change1(currentPage) {
             this.currentPage1 = currentPage;
@@ -842,9 +382,6 @@ export default {
         },
         current_change6(currentPage) {
             this.currentPage6 = currentPage;
-        },
-        current_change7(currentPage) {
-            this.currentPage7 = currentPage;
         },
         //搜索试卷
         searchPapers() {
@@ -874,529 +411,11 @@ export default {
                     console.log(reject);
             });
         },
-        //删除试卷
-        deletePaperName(index, row) {
-            this.$ajax({
-                method: "post",
-                // url: "http://120.26.186.88:8080/paper/deletePaper?paperldStr="+row.paperId,
-                url: "http://120.26.186.88:8080/paper/deletePaper",
-                data: {
-                    paperIdStr: row.paperId,
-                },
-                dataType: "json",
-                crossDomain: true,
-                cache: false,
-                transformRequest(obj){
-                    var str = [];
-                    for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                    return str.join("&");
-                },
-            }).then(resolve => {
-                this.$ajax({
-                    method: "post",
-                    url: "http://120.26.186.88:8080/paper/listAllPaper",
-                    dataType: "json",
-                    crossDomain: true,
-                    cache: false,
-                }).then(resolve => {
-                    this.tableData1 = resolve.data;
-                    //获取数组长度赋值给total
-                    this.total1 = resolve.data.length;
-                    // console.log(resolve.data);
-                }, reject => {
-                    // this.peoLoading = true;
-                    console.log(reject);
-                });
-            }, reject => {
-                // this.peoLoading = true;
-                console.log(reject);
-            });
-        },
-        //修改试卷名
-        changePaperName(index, row) {
-            this.$prompt('请输入新的试卷名称', '修改试卷名称', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-            }).then(({ value }) => {
-                // console.log(value);
-                this.$ajax({
-                    method: "post",
-                    url: "http://120.26.186.88:8080/paper/updatePaper",
-                    data: {
-                        paperIdStr: row.paperId,
-                        paperName: value,
-                    },
-                    dataType: "json",
-                    crossDomain: true,
-                    cache: false,
-                    transformRequest(obj){
-                        var str = [];
-                        for(var p in obj){
-                            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                        }
-                        return str.join("&");
-                    },
-                }).then(resolve => {
-                    this.$ajax({
-                        method: "post",
-                        url: "http://120.26.186.88:8080/paper/listAllPaper",
-                        dataType: "json",
-                        crossDomain: true,
-                        cache: false,
-                    }).then(resolve => {
-                        this.tableData1 = resolve.data;
-                        //获取数组长度赋值给total
-                        this.total1 = resolve.data.length;
-                        // console.log(resolve.data);
-                    }, reject => {
-                        // this.peoLoading = true;
-                        console.log(reject);
-                    });
-                }, reject => {
-                    // this.peoLoading = true;
-                    console.log(reject);
-                });
-            }).catch(() => {
-                this.$message({
-                    type: 'info',
-                    message: '取消输入'
-                });       
-            });
-        },
-
-        //重置
-        reset(formName) {
-            this.$refs[formName].resetFields();
-        },
-
-        //提交试卷名 手动录入
-        subPaperName1() {
-            console.log(this.handPaperName);
-            console.log(this.handPaperName.paperNameHand);
-            this.$ajax({
-                method: "post",
-                url: "http://120.26.186.88:8080/paper/addPaper",
-                dataType: "json",
-                data: {
-                    paperName: this.handPaperName.paperNameHand,
-                },
-                crossDomain: true,
-                cache: false,
-                transformRequest(obj){
-                    var str = [];
-                    for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                    return str.join("&");
-                },
-            }).then(resolve => {
-                console.log(resolve);
-                this.paperIDback = resolve.data;
-                //调用显示试卷
-                this.showPaper(this.paperIDback);
-            }, reject => {
-                console.log("提交失败!");
-            });
-        },
-
-        //将当前已有题目显示在试卷之中
-        showPaper(PID) {
-            const pid = PID;
-            //单选
-            this.$ajax({
-                method: "post",
-                // method: "get",
-                // url: "../../../static/testJSONdanxuan.json",
-                url: "http://120.26.186.88:8080/connect/listAllConnect",
-                dataType: "json",
-                data: {
-                    paperIdStr: pid,
-                    exerciseTypeStr: 0,
-                },
-                crossDomain: true,
-                cache: false,
-                transformRequest(obj){
-                    var str = [];
-                    for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                    return str.join("&");
-                },
-            }).then(resolve => {
-                //题目渲染至页面之中
-                // this.question = resolve.data;
-                this.questionDanxuan = resolve.data;
-                console.log(resolve.data);
-                // this.showPaper(pid);
-            }, reject => {
-                console.log("题目获取失败！");
-            });
-            //判断
-            this.$ajax({
-                method: "post",
-                // method: "get",
-                // url: "../../../static/testJSONdanxuan.json",
-                url: "http://120.26.186.88:8080/connect/listAllConnect",
-                dataType: "json",
-                data: {
-                    paperIdStr: pid,
-                    exerciseTypeStr: 1,
-                },
-                crossDomain: true,
-                cache: false,
-                transformRequest(obj){
-                    var str = [];
-                    for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                    return str.join("&");
-                },
-            }).then(resolve => {
-                //题目渲染至页面之中
-                // this.question = resolve.data;
-                this.questionPanduan = resolve.data;
-                console.log(this.questionPanduan);
-                // this.showPaper(pid);
-            }, reject => {
-                console.log("题目获取失败！");
-            });
-            //填空
-            this.$ajax({
-                method: "post",
-                // method: "get",
-                // url: "../../../static/testJSONdanxuan.json",
-                url: "http://120.26.186.88:8080/connect/listAllConnect",
-                dataType: "json",
-                data: {
-                    paperIdStr: pid,
-                    exerciseTypeStr: 2,
-                },
-                crossDomain: true,
-                cache: false,
-                transformRequest(obj){
-                    var str = [];
-                    for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                    return str.join("&");
-                },
-            }).then(resolve => {
-                //题目渲染至页面之中
-                // this.question = resolve.data;
-                this.questionTiankong = resolve.data;
-                console.log(this.questionTiankong);
-                // this.showPaper(pid);
-            }, reject => {
-                console.log("题目获取失败！");
-            });
-            //问答
-            this.$ajax({
-                method: "post",
-                // method: "get",
-                // url: "../../../static/testJSONdanxuan.json",
-                url: "http://120.26.186.88:8080/connect/listAllConnect",
-                dataType: "json",
-                data: {
-                    paperIdStr: pid,
-                    exerciseTypeStr: 3,
-                },
-                crossDomain: true,
-                cache: false,
-                transformRequest(obj){
-                    var str = [];
-                    for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                    return str.join("&");
-                },
-            }).then(resolve => {
-                //题目渲染至页面之中
-                // this.question = resolve.data;
-                this.questionWenda = resolve.data;
-                console.log(this.questionWenda);
-                // this.showPaper(pid);
-            }, reject => {
-                console.log("题目获取失败！");
-            });
-        },
-
-        //录入题目上传 
-        submihandQuestion() {
-            if((this.handQuestionInput.questionType)=="3") {
-                console.log(this.handQuestionInput.questionType);
-                this.$ajax({
-                    method: "post",
-                    url: "http://120.26.186.88:8080/paperDetail/addPaperDetail",
-                    data: {
-                        paperIdStr: this.paperIDback,
-                        exerciseTypeStr: this.handQuestionInput.questionType,
-                        contentStr: this.handQuestionInput.questionContext,
-                        typeAStr: null,
-                        typeBStr: null,
-                        typeCStr: null,
-                        typeDStr: null,
-                        answerStr: this.handQuestionInput.questionAnswerZhuguan1,
-                        answerStr2: this.handQuestionInput.questionAnswerZhuguan2,
-                        answerStr3: this.handQuestionInput.questionAnswerZhuguan3,
-                        scoreStr: this.handQuestionInput.questionCount,
-                    },
-                    dataType: "json",
-                    crossDomain: true,
-                    cache: false,
-                    transformRequest(obj){
-                        var str = [];
-                        for(var p in obj){
-                            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                        }
-                        return str.join("&");
-                    },
-                }).then(resolve => {
-                    this.questionDetail = resolve.data;
-                    console.log("当前试卷编号为：");
-                    console.log(this.paperIDback);
-                    console.log(this.questionDetail);
-                    this.$ajax({
-                        method: "post",
-                        // url: "http://120.26.186.88:8080/connect/addConnect?paperIdStr="+this.paperIDback+"&exerciseTypeStr="+this.questionDetail,
-                        url: "http://120.26.186.88:8080/connect/addConnect",
-                        dataType: "json",
-                        data: {
-                            paperIdStr: this.paperIDback,
-                            paperDetailIdStr: this.questionDetail,
-                        },
-                        crossDomain: true,
-                        cache: false,
-                        transformRequest(obj){
-                            var str = [];
-                            for(var p in obj){
-                                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                            }
-                            return str.join("&");
-                        },
-                    }).then(resolve => {
-                        //调用显示试卷
-                        this.showPaper(this.paperIDback);
-                        //提交之后 表单清空
-                        this.handQuestionInput = {brand_right: 0};
-                        console.log("绑定成功");
-                    }, reject => {
-                        console.log("题目创建失败！");
-                    });
-                }, reject => {
-                    console.log("题目创建失败了！");
-                });
-            }
-            //判断
-            else {
-                this.$ajax({
-                    method: "post",
-                    url: "http://120.26.186.88:8080/paperDetail/addPaperDetail",
-                    data: {
-                        paperIdStr: this.paperIDback,
-                        exerciseTypeStr: this.handQuestionInput.questionType,
-                        contentStr: this.handQuestionInput.questionContext,
-                        typeAStr: this.handQuestionInput.choiceA,
-                        typeBStr: this.handQuestionInput.choiceB,
-                        typeCStr: this.handQuestionInput.choiceC,
-                        typeDStr: this.handQuestionInput.choiceD,
-                        answerStr: this.handQuestionInput.questionAnswerKeguan,
-                        scoreStr: this.handQuestionInput.questionCount,
-                    },
-                    dataType: "json",
-                    crossDomain: true,
-                    cache: false,
-                    transformRequest(obj){
-                        var str = [];
-                        for(var p in obj){
-                            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                        }
-                        return str.join("&");
-                    },
-                }).then(resolve => {
-                    this.questionDetail = resolve.data;
-                    console.log(this.paperIDback);
-                    console.log(this.questionDetail);
-                    this.$ajax({
-                        method: "post",
-                        // url: "http://120.26.186.88:8080/connect/addConnect?paperIdStr="+this.paperIDback+"&exerciseTypeStr="+this.questionDetail,
-                        url: "http://120.26.186.88:8080/connect/addConnect",
-                        dataType: "json",
-                        data: {
-                            paperIdStr: this.paperIDback,
-                            paperDetailIdStr: this.questionDetail,
-                        },
-                        crossDomain: true,
-                        cache: false,
-                        transformRequest(obj){
-                            var str = [];
-                            for(var p in obj){
-                                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                            }
-                            return str.join("&");
-                        },
-                    }).then(resolve => {
-                        //调用显示试卷
-                        this.showPaper(this.paperIDback);
-                        // this.reset('handQuestionInput');
-                        this.handQuestionInput = {brand_right: 0};
-                        console.log("绑定成功");
-                    }, reject => {
-                        console.log("题目创建失败！");
-                    });
-                }, reject => {
-                    console.log("题目创建失败了！");
-                });
-            }
-        },
-
-        // 设置时间格式
-        // dateChangebirthday(val) {
-        //     console.log(val);
-        //     this.outputTime.beginDate = val;
-        // },
-
-        //发布考试时间
-        sureSubmit() {
-            console.log(this.outputTime);
-            let testBegin = "开始:"+this.outputTime.beginDate+this.outputTime.beginTime;
-            let testEnd = "结束:"+this.outputTime.endDate+this.outputTime.endTime;
-            console.log(testBegin);
-            console.log(testEnd);
-            console.log(this.paperIDback);
-            this.$ajax({
-                method: "post",
-                // url: "http://120.26.186.88:8080/paper/publisPaper",
-                dataType: "json",
-                // data: {
-                //     paperIdStr: this.paperIDback,
-                //     beginTime: testBegin,
-                //     endTime: testEnd,
-                //     duration: this.outputTime.duration
-                // },
-                url: "http://120.26.186.88:8080/paper/publisPaper?paperIdStr="+this.paperIDback+"&beginTime="+testBegin+"&endTime="+testEnd+"&duration="+this.outputTime.duration,
-                crossDomain: true,
-                cache: false,
-                transformRequest(obj){
-                    var str = [];
-                    for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                    return str.join("&");
-                },
-            }).then(resolve => {
-                console.log("上传时间成功！");
-                // 发布试卷后 填写试卷名称清空
-                this.selectPaperName = {brand_right: 0};
-                this.handPaperName = {brand_right: 0};
-                this.$ajax({
-                    method: "post",
-                    url: "http://120.26.186.88:8080/paperDetail/listAllPaperDetail",
-                    dataType: "json",
-                    crossDomain: true,
-                    cache: false,
-                }).then(resolve => {
-                    this.tableData2 = resolve.data;
-                    //获取数组长度赋值给total
-                    this.total2 = resolve.data.length;
-                    // this.peoLoading = false;
-                    console.log(resolve);
-                    // console.log(resolve.data);
-                }, reject => {
-                    // this.peoLoading = true;
-                    console.log(reject);
-                });
-            }, reject => {
-                console.log("未能上传数据");
-            });
-        },
-
-        //提交试卷名 题库选题
-        subPaperName2() {
-            this.$ajax({
-                method: "post",
-                url: "http://120.26.186.88:8080/paper/addPaper",
-                dataType: "json",
-                data: {
-                    paperName: this.selectPaperName.paperNameSelect,
-                },
-                crossDomain: true,
-                cache: false,
-                transformRequest(obj){
-                    var str = [];
-                    for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                    return str.join("&");
-                },
-            }).then(resolve => {
-                this.paperIDback = resolve.data;
-            }, reject => {
-                console.log("提交失败!");
-            });
-        },
-
-        //获得所有题目 列在题库表中
-        getAllQuestion() {
-            this.$ajax({
-                method: "post",
-                url: "http://120.26.186.88:8080/paperDetail/listAllPaperDetail",
-                dataType: "json",
-                crossDomain: true,
-                cache: false,
-            }).then(resolve => {
-                 console.log(resolve);
-                this.tableData7 = resolve.data;
-                //获取数组长度赋值给total
-                this.total7 = resolve.data.length;
-                // this.peoLoading = false;
-                console.log(this.total7);
-                // console.log(resolve.data);
-            }, reject => {
-                // this.peoLoading = true;
-                console.log(reject);
-            });
-        },
-
-        //点击题目添加
-        sureAddQuestion(index, row) {
-            console.log("当前试卷编号为：");
-            console.log(this.paperIDback);
-            console.log(row.paperDetailId);
-            this.$ajax({
-                method: "post",
-                // url: "http://120.26.186.88:8080/connect/addConnect?paperIdStr="+this.paperIDback+"&exerciseTypeStr="+this.questionDetail,
-                url: "http://120.26.186.88:8080/connect/addConnect",
-                dataType: "json",
-                data: {
-                    paperIdStr: this.paperIDback,
-                    paperDetailIdStr: row.paperDetailId,
-                },
-                crossDomain: true,
-                cache: false,
-                transformRequest(obj){
-                    var str = [];
-                    for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                    return str.join("&");
-                },
-            }).then(resolve => {
-                //调用显示试卷
-                // this.showPaper(this.paperIDback);
-                this.showPaper(this.paperIDback)
-                console.log("绑定成功");
-            }, reject => {
-                console.log("题目创建失败！");
-            });
-        },
-
         //提交新增公告
         submiaddNotice() {
             this.$ajax({
                 method: "post",
-                url: "http://47.103.10.220:8010/notice/addNotice",
+                url: "http://120.26.186.88:8080/notice/addNotice",
                 dataType: "json",
                 data: {
                     title: this.addNoticeInfor.title,
@@ -1414,7 +433,7 @@ export default {
             }).then(resolve => {
                 this.$ajax({
                     method: "post",
-                    url: "http://47.103.10.220:8010/notice/listAllNotice",
+                    url: "http://120.26.186.88:8080/notice/listAllNotice",
                     dataType: "json",
                     crossDomain: true,
                     cache: false,
@@ -1431,7 +450,6 @@ export default {
                 console.log("failed request!");
             });
         },
-
         //查看试卷对应的所有考生成绩
         showAllScore(index, row) {
             this.allStudentScore = true;
@@ -1439,7 +457,38 @@ export default {
             console.log(row.paperId);
             this.$ajax({
                 method: "post",
-                url: "http://47.103.10.220:8010/score/queryScoreByPaper",
+                url: "http://120.26.186.88:8080/score/queryScoreByPaper",
+                data: {
+                    paperIdStr: row.paperId,
+                },
+                dataType: "json",
+                crossDomain: true,
+                cache: false,
+                transformRequest(obj){
+                    var str = [];
+                    for(var p in obj){
+                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                    }
+                    return str.join("&");
+                },
+            }).then(resolve => {
+                this.tableData5 = resolve.data;
+                //获取数组长度赋值给total
+                this.total5 = resolve.data.length;
+                // console.log(resolve.data);
+            }, reject => {
+                    // this.peoLoading = true;
+                    console.log(reject);
+            });
+        },
+        //查看不及格成绩信息
+        searchfailScores(index,row){
+            this.allStudentScore = true;
+            this.allScore = false;
+            console.log(row.paperId);
+            this.$ajax({
+                method: "post",
+                url: "http://120.26.186.88:8080/score/listScoreByMark2",
                 data: {
                     paperIdStr: row.paperId,
                 },
@@ -1464,13 +513,16 @@ export default {
             });
         },
 
-        //搜索题目
-        searchQuestionBtn() {
+        //查看及格成绩信息
+        searchScores(index,row){
+            this.allStudentScore = true;
+            this.allScore = false;
+            console.log(row.paperId);
             this.$ajax({
                 method: "post",
-                url: "http://120.26.186.88:8080/paperDetail/queryPaperDetail",
+                url: "http://120.26.186.88:8080/score/listScoreByMark1",
                 data: {
-                    keyStr: this.searchQuestion,
+                    paperIdStr: row.paperId,
                 },
                 dataType: "json",
                 crossDomain: true,
@@ -1483,171 +535,21 @@ export default {
                     return str.join("&");
                 },
             }).then(resolve => {
-                this.tableData2 = resolve.data;
+                this.tableData5 = resolve.data;
                 //获取数组长度赋值给total
-                this.total2 = resolve.data.length;
-                // this.peoLoading = false;
-                console.log(this.total2);
+                this.total5 = resolve.data.length;
                 // console.log(resolve.data);
             }, reject => {
-                console.log(reject);
-            });
-        },
-
-        //删除题目
-        deleteQuestion(index, row) {
-            // console.log(row.exerciseId);
-            this.$ajax({
-                method: "post",
-                // url: "http://120.26.186.88:8080/paper/deletePaper?paperldStr="+row.paperId,
-                url: "http://120.26.186.88:8080/paperDetail/deletePaperDetail",
-                data: {
-                    paperIdStr: row.paperDetailId,
-                },
-                dataType: "json",
-                crossDomain: true,
-                cache: false,
-                transformRequest(obj){
-                    var str = [];
-                    for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                    return str.join("&");
-                },
-            }).then(resolve => {
-                this.$ajax({
-                    method: "post",
-                    url: "http://120.26.186.88:8080/paperDetail/listAllPaperDetail",
-                    dataType: "json",
-                    crossDomain: true,
-                    cache: false,
-                }).then(resolve => {
-                    this.tableData2 = resolve.data;
-                    //获取数组长度赋值给total
-                    this.total2 = resolve.data.length;
-                    // this.peoLoading = false;
-                    console.log(this.total2);
-                    // console.log(resolve.data);
-                }, reject => {
+                    // this.peoLoading = true;
                     console.log(reject);
-                });
-            }, reject => {
-                console.log("删除失败");
             });
-        },
-
-        //新增题目
-        addQuestion() {
-            if((this.handQuestionInput.questionType)=="3") {
-                console.log(this.handQuestionInput.questionType);
-                this.$ajax({
-                    method: "post",
-                    url: "http://120.26.186.88:8080/paperDetail/addPaperDetail",
-                    data: {
-                        paperIdStr: this.paperIDback,
-                        exerciseTypeStr: this.handQuestionInput.questionType,
-                        contentStr: this.handQuestionInput.questionContext,
-                        typeAStr: null,
-                        typeBStr: null,
-                        typeCStr: null,
-                        typeDStr: null,
-                        answerStr: this.handQuestionInput.questionAnswerZhuguan1,
-                        answerStr2: this.handQuestionInput.questionAnswerZhuguan2,
-                        answerStr3: this.handQuestionInput.questionAnswerZhuguan3,
-                        scoreStr: this.handQuestionInput.questionCount,
-                    },
-                    dataType: "json",
-                    crossDomain: true,
-                    cache: false,
-                    transformRequest(obj){
-                        var str = [];
-                        for(var p in obj){
-                            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                        }
-                        return str.join("&");
-                    },
-                }).then(resolve => {
-                    console.log(resolve.data);
-                    this.$ajax({
-                        method: "post",
-                        url: "http://120.26.186.88:8080/paperDetail/listAllPaperDetail",
-                        dataType: "json",
-                        crossDomain: true,
-                        cache: false,
-                    }).then(resolve => {
-                        this.tableData2 = resolve.data;
-                        //获取数组长度赋值给total
-                        this.total2 = resolve.data.length;
-                        // this.peoLoading = false;
-                        console.log(this.total2);
-                        // console.log(resolve.data);
-                        //提交之后 表单清空
-                        this.handQuestionInput = {brand_right: 0};
-                    }, reject => {
-                        console.log(reject);
-                    });
-                }, reject => {
-                    console.log("题目创建失败了！");
-                });
-            }
-            //判断
-            else {
-                this.$ajax({
-                    method: "post",
-                    url: "http://120.26.186.88:8080/paperDetail/addPaperDetail",
-                    data: {
-                        paperIdStr: this.paperIDback,
-                        exerciseTypeStr: this.handQuestionInput.questionType,
-                        contentStr: this.handQuestionInput.questionContext,
-                        typeAStr: this.handQuestionInput.choiceA,
-                        typeBStr: this.handQuestionInput.choiceB,
-                        typeCStr: this.handQuestionInput.choiceC,
-                        typeDStr: this.handQuestionInput.choiceD,
-                        answerStr: this.handQuestionInput.questionAnswerKeguan,
-                        scoreStr: this.handQuestionInput.questionCount,
-                    },
-                    dataType: "json",
-                    crossDomain: true,
-                    cache: false,
-                    transformRequest(obj){
-                        var str = [];
-                        for(var p in obj){
-                            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                        }
-                        return str.join("&");
-                    },
-                }).then(resolve => {
-                    // this.questionDetail = resolve.data;
-                    console.log(resolve.data);
-                    this.$ajax({
-                        method: "post",
-                        url: "http://120.26.186.88:8080/paperDetail/listAllPaperDetail",
-                        dataType: "json",
-                        crossDomain: true,
-                        cache: false,
-                    }).then(resolve => {
-                        this.tableData2 = resolve.data;
-                        //获取数组长度赋值给total
-                        this.total2 = resolve.data.length;
-                        // this.peoLoading = false;
-                        console.log(this.total2);
-                        // console.log(resolve.data);
-                        //提交之后 表单清空
-                        this.handQuestionInput = {brand_right: 0};
-                    }, reject => {
-                        console.log(reject);
-                    });
-                }, reject => {
-                    console.log("题目创建失败了！");
-                });
-            }
         },
 
         //删除用户
         deleteUser(index, row) {
             this.$ajax({
                 method: "post",
-                url: "http://47.103.10.220:8010/user/deleteUser",
+                url: "http://120.26.186.88:8080/superUser/deleteUser",
                 data: {
                     userIdStr: row.userId,
                 },
@@ -1664,7 +566,7 @@ export default {
             }).then(resolve => {
                this.$ajax({
                     method: "post",
-                    url: "http://47.103.10.220:8010/user/listAllUser",
+                    url: "http://120.26.186.88:8080/user/listAllUser",
                     dataType: "json",
                     crossDomain: true,
                     cache: false,
@@ -1673,7 +575,7 @@ export default {
                     //获取数组长度赋值给total
                     this.total6 = resolve.data.length;
                     // this.peoLoading = false;
-                    console.log(this.total6);
+                    console.log(this.total1);
                     // console.log(resolve.data);
                 }, reject => {
                     // this.peoLoading = true;
@@ -1687,7 +589,7 @@ export default {
         updateUserPower(index, row) {
             this.$ajax({
                 method: "post",
-                url: "http://47.103.10.220:8010/user/updatePower",
+                url: "http://120.26.186.88:8080/superUser/updateUserPower",
                 data: {
                     userIdStr: row.userId,
                 },
@@ -1704,7 +606,7 @@ export default {
             }).then(resolve => {
                this.$ajax({
                     method: "post",
-                    url: "http://47.103.10.220:8010/user/listAllUser",
+                    url: "http://120.26.186.88:8080/user/listAllUser",
                     dataType: "json",
                     crossDomain: true,
                     cache: false,
@@ -1728,13 +630,19 @@ export default {
         //获取用户信息
         this.$ajax({
           method: "post",
-          url: "http://47.103.10.220:8010/user/listUserById",
+          url: "http://120.26.186.88:8080/user/listUserById",
           dataType: "json",
           crossDomain: true,
           cache: false,
         }).then(resolve => {
             console.log(resolve);
             this.userInfor = resolve.data[0];
+            if(this.userInfor.power == 0)
+                this.userPower = "学生";
+            else if(this.userInfor.power == 1)
+                this.userPower = "教师";
+            else 
+                this.userPower = "管理员";
         }, reject => {
             // this.peoLoading = true;
             console.log(reject);
@@ -1748,7 +656,6 @@ export default {
             cache: false,
         }).then(resolve => {
             this.tableData1 = resolve.data;
-            console.log(resolve.data);
             //获取数组长度赋值给total
             this.total1 = resolve.data.length;
             // this.peoLoading = false;
@@ -1770,7 +677,7 @@ export default {
             //获取数组长度赋值给total
             this.total2 = resolve.data.length;
             // this.peoLoading = false;
-            console.log(resolve);
+            console.log(this.total2);
             // console.log(resolve.data);
         }, reject => {
             // this.peoLoading = true;
@@ -1779,7 +686,7 @@ export default {
         //公告管理
         this.$ajax({
             method: "post",
-            url: "http://47.103.10.220:8010/notice/listAllNotice",
+            url: "http://120.26.186.88:8080/notice/listAllNotice",
             dataType: "json",
             crossDomain: true,
             cache: false,
@@ -1795,7 +702,7 @@ export default {
         //成绩管理
         this.$ajax({
             method: "post",
-            url: "http://47.103.10.220:8010/paper/listAllPaper",
+            url: "http://120.26.186.88:8080/paper/listAllPaper",
             dataType: "json",
             crossDomain: true,
             cache: false,
@@ -1813,7 +720,7 @@ export default {
         //用户管理
         this.$ajax({
             method: "post",
-            url: "http://47.103.10.220:8010/user/listAllUser",
+            url: "http://120.26.186.88:8080/user/listAllUser",
             dataType: "json",
             crossDomain: true,
             cache: false,
@@ -1934,7 +841,12 @@ export default {
         color: white;
         text-decoration: none;
     }
-
+    //头像
+    #userHead {
+        position absolute
+        top 12%
+        right 15%;
+    }
     /* 侧边栏 */
     #aside {
         width: 13%;
@@ -1958,5 +870,4 @@ export default {
     /* .el-pagination .el-pager li {
         background-color: #879b6f;
     } */
-
 </style>

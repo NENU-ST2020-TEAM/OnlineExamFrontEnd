@@ -10,6 +10,7 @@ VueRouter.prototype.goBack = function () {
 // 引入路由组件文件夹下的组件
 import Login from '@/pages/Login/Login.vue'
 import admin from '@/pages/Admin/admin.vue'
+import Teacher from '@/pages/Teacher/Teacher.vue'
 
 // 路由组件懒加载
 const Home = () => import('@/pages/Home/Home.vue')
@@ -39,6 +40,10 @@ export default new VueRouter({
     {
       path:'/admin',
       component:admin
+    },
+    {
+      path:'/Teacher',
+      component:Teacher
     },
 
     {

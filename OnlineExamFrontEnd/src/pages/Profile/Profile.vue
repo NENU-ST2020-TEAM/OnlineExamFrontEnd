@@ -12,7 +12,7 @@
           <p class="user-info-top" >{{userInfor.username}}</p>
         </div>
         <div class="profile_image">
-          <img :src="require('../../assets/头像.jpg')" alt="学生头像">
+          <img :src="require('../../assets/Student.jpg')" alt="学生头像">
           <!--<img src="../../common/imgs/profile.jpg" alt="头像" v-else>-->
         </div>
       </a>
@@ -26,11 +26,19 @@
       active-text-color="#4ab8a1">
         <el-menu-item index="1">
           <i class="el-icon-menu"></i>
-          <span slot="title" @click="isTest=true; myScore=false;">我的考试</span>
+          <span slot="title" @click="isTest=true; myScore=false;sureTest=false; mistake=false;noticeShow=false">我的考试</span>
         </el-menu-item>
-        <el-menu-item index="2" @click="isTest=false; myScore=true; sureTest=false">
+        <el-menu-item index="2" @click="isTest=false; myScore=true; sureTest=false; mistake=false;noticeShow=false">
           <i class="el-icon-document"></i>
           <span slot="title">查看成绩</span>
+        </el-menu-item>
+        <el-menu-item index="3" @click="isTest=false; myScore=false; sureTest=false; mistake=true;noticeShow=false">
+          <i class="el-icon-document"></i>
+          <span slot="title">错题集</span>
+        </el-menu-item>
+        <el-menu-item index="4" @click="isTest=false; myScore=false; sureTest=false; mistake=false;noticeShow=true">
+          <i class="el-icon-document"></i>
+          <span slot="title">我的公告</span>
         </el-menu-item>
       </el-menu>
     </div>
@@ -59,7 +67,8 @@
     <!-- 试卷列表 -->
     <el-card v-show="sureTest" id="testYes">
       <el-table :data="tableData2.slice((currentPage2-1)*pagesize,currentPage2*pagesize)" style="width: 100%">
-          <el-table-column align="center" prop="paperId" label="试卷编号"></el-table-column>
+          <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
+          <!-- <el-table-column align="center" prop="paperId" label="试卷编号"></el-table-column> -->
           <el-table-column align="center" prop="paperName" label="试卷名称"></el-table-column>
           <el-table-column align="center" prop="operation" label="操作">
             <template slot-scope="scope">
@@ -91,43 +100,113 @@
                   plain 
                   @click="submiteAnwser()">确认提交</el-button>
       </div>
-      <div v-for="item in question" :key="item.id">
-        <p><span>{{item.exerciseId}}. </span><span>{{item.content}}</span></p>
-        <el-radio-group 
-            v-model="item.index"
-            @change="handleRadioChange(item.index,item.exerciseId)"
-            v-show="item.exerciseType='单选题'">
+      <!-- 单选 -->
+      <div v-for="(item, index) in questionDanxuan" :key="item.index" v-show="danxuanShow">
+        <template v-if="index<questionDanxuan.length-1">
+          <p style="margin-top: 10px; margin-down: 5px;">
+            <span>{{item.index}}. </span>
+            <span>{{item.content}}</span>
+          </p>
+          <el-radio-group v-model="item.solution" @change="handleRadioChange(item.index,item.paperDetailId)">
             <el-radio label="A">A.{{item.typeA}}</el-radio>
             <el-radio label="B">B.{{item.typeB}}</el-radio>
             <el-radio label="C">C.{{item.typeC}}</el-radio>
             <el-radio label="D">D.{{item.typeD}}</el-radio>
-        </el-radio-group>
-        <!-- <el-checkbox-group
-            v-model="item.index"
-            @change="handleCheckChange(item.index,item.exerciseId)"
-            v-show="item.exerciseType='多选题'">
-            <el-checkbox label="A">A.{{item.typeA}}</el-checkbox>
-            <el-checkbox label="B">B.{{item.typeB}}</el-checkbox>
-            <el-checkbox label="C">C.{{item.typeC}}</el-checkbox>
-            <el-checkbox label="D">D.{{item.typeD}}</el-checkbox>
-        </el-checkbox-group> -->
+          </el-radio-group>
+        </template>
+      </div>
+      <!-- 判断 -->
+      <div v-for="(item, index) in questionPanduan" :key="item.index" v-show="panduanShow">
+        <template v-if="index<questionPanduan.length-1">
+          <p style="margin-top: 10px; margin-down: 5px;">
+            <span>{{item.index}}. </span>
+            <span>{{item.content}}</span>
+          </p>
+          <el-radio-group v-model="item.solution" @change="handleRadioChange(item.index,item.paperDetailId)">
+            <el-radio label="A">A.{{item.typeA}}</el-radio>
+            <el-radio label="B">B.{{item.typeB}}</el-radio>
+          </el-radio-group>
+        </template>
+      </div>
+      <!-- 填空 -->
+      <div v-for="(item, index) in questionTiankong" v-bind:key="item.index" v-show="tiankongShow">
+        <template v-if="index<questionTiankong.length-1">
+          <p style="margin-top: 10px; margin-down: 5px;">
+            <span>{{item.index}}. </span>
+            <span>{{item.content}}</span>
+          </p>
+          <el-input type="text" placeholder="请输入答案" v-model="item.solution"></el-input>
+        </template>
+      </div>
+      <!-- 问答 -->
+        <div v-for="(item, index) in questionWenda" v-bind:key="item.index" v-show="wendaShow">
+          <template v-if="index<questionWenda.length-1">
+            <p style="margin-top: 10px; margin-down: 5px;">
+              <span>{{item.index}}. </span>
+              <span>{{item.content}}</span>
+            </p>
+            <el-input type="textarea" placeholder="请输入答案" v-model="item.solution"></el-input>
+          </template>
       </div>
     </el-card>
     
     <!-- 查看成绩 -->
     <el-card v-show="myScore" id="score">
       <el-table :data="tableData1.slice((currentPage1-1)*pagesize,currentPage1*pagesize)" style="width: 100%" id="peoTable">
-          <el-table-column align="center" prop="paperId" label="试卷编号"></el-table-column>
+          <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
+          <!-- <el-table-column align="center" prop="paperId" label="试卷编号"></el-table-column> -->
           <el-table-column align="center" prop="paperName" label="试卷名称"></el-table-column>
           <el-table-column align="center" prop="mark" label="得分"></el-table-column>
-          <div class="pagination">
-            <el-pagination background layout="prev, pager, next" :total="total1" @current-change="current_change1" class="paginate"></el-pagination>
-          </div>
       </el-table>
+      <div class="pagination">
+            <el-pagination background layout="prev, pager, next" :total="total1" @current-change="current_change1" class="paginate"></el-pagination>
+      </div>
     </el-card>
 
+    <!-- 错题集 -->
+    <el-card v-show="mistake" id="mis">
+      <el-table :data="tableData3.slice((currentPage3-1)*pagesize,currentPage3*pagesize)" style="width: 100% ">
+          <el-table-column align="center" prop="wrongId" label="错误编号"></el-table-column>
+          <el-table-column align="center" prop="paperId" label="试卷编号"></el-table-column>
+          <el-table-column align="center" prop="paperDetailId" label="题目编号"></el-table-column>
+          <el-table-column align="center" prop="answer" label="所选答案"></el-table-column>
+          <el-table-column align="center" prop="right" label="正确答案"></el-table-column>
+          <el-table-column align="center" prop="score" label="满分"></el-table-column>
+          <el-table-column align="center" prop="nowScore" label="得分"></el-table-column>
+          <el-table-column align="center" prop="operation" label="操作">
+            <template slot-scope="scope">
+              <el-button type="success" 
+                icon="el-icon-delete" 
+                title="删除错题" 
+                circle 
+                plain
+                @click="deleteWrongQuestion(scope.$index, scope.row)"></el-button>
+            </template>
+                        <!-- <el-button type="danger" icon="el-icon-delete" title="删除" @click="dele" plain>删除</el-button> -->
+          </el-table-column>
+      </el-table>
+      <div class="pagination">
+            <el-pagination background layout="prev, pager, next" :total="total3" @current-change="current_change3" class="paginate"></el-pagination>
+      </div>
+    </el-card>
+
+    <!-- 公告管理 -->
+    <el-card v-show="noticeShow" id="noti">
+        <el-table :data="tableData4.slice((currentPage4-1)*pagesize,currentPage4*pagesize)" style="width: 100%" id="peoTable">
+          <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
+          <!-- <el-table-column width="80px" align="center" prop="noticeId" label="公告编号"></el-table-column> -->
+          <el-table-column width="80px" align="center" prop="userId" label="发布者ID"></el-table-column>
+          <el-table-column align="center" prop="title" label="标题"></el-table-column>
+          <el-table-column align="center" prop="content" label="内容"></el-table-column>
+          <el-table-column align="center" prop="createTime" label="发布时间"></el-table-column>
+        </el-table>
+        <div class="pagination">
+          <el-pagination background layout="prev, pager, next" :total="total4" @current-change="current_change4" class="paginate"></el-pagination>
+        </div>
+    </el-card>
+          
     <el-dialog title="个人信息" v-model="userInfor" :visible.sync="personInfor" :close-on-click-modal="false">
-      <img id="userHead" src="../../assets/头像.jpg" width="100px" height="100px" style="border-radius: 50px" />
+      <img id="userHead" src="../../assets/Student.jpg" width="100px" height="100px" style="border-radius: 50px" />
       <el-form  ref="userInfor" label-width="150px">
         <el-form-item label="用户ID：">
           <el-col :span="8">
@@ -151,7 +230,7 @@
         </el-form-item>
         <el-form-item label="权限：">
           <el-col :span="8">
-            <span>{{userInfor.power}}</span>
+            <span>{{this.userPower}}</span>
           </el-col>
         </el-form-item>
       </el-form>
@@ -171,9 +250,18 @@
       return {
         sno:this.$store.state.userInfo.sno,
         isSelect:false,
-
+        
         //在线考试
         //试卷id
+        questionDanxuan: [],
+        questionTiankong: [],
+        questionPanduan: [],
+        questionWenda: [],
+        danxuanShow: false,
+        panduanShow: false,
+        tiankongShow: false,
+        wendaShow: false,
+
         paperID: '',
         isTest: true,
         sureTest: false,
@@ -187,10 +275,15 @@
         s: 0,
         time: 0,
         str: '00:00:00',
+        duration: '',
         radio: '',
         radioShow: true,
         checkShow: false,
         testing: false,
+
+        //暂存做题答案数据
+        solutionList: [],
+
         //分页
         pagesize: 10,
         //查看成绩
@@ -198,6 +291,18 @@
         tableData1: [],
         currentPage1: 1,
         total1: 0,
+        
+        //错题集
+        mistake: false,
+        tableData3: [],
+        currentPage3: 1,
+        total3: 0,
+
+        //公告
+        noticeShow: false,
+        tableData4: [],
+        currentPage4: 1,
+        total4: 0,
 
         //personInfor
         personInfor: false,
@@ -208,6 +313,7 @@
 
         //用户信息
         userInfor: [],
+        userPower: "",
       }
     },
     computed:{
@@ -225,14 +331,21 @@
       }).then(resolve => {
         console.log(resolve.data[0]);
         this.userInfor = resolve.data[0];
+        if(this.userInfor.power == 0)
+          this.userPower = "学生";
+        else if(this.userInfor.power == 1)
+          this.userPower = "教师";
+        else 
+          this.userPower = "管理员";
       }, reject => {
           // this.peoLoading = true;
           console.log(reject);
       });
+
       //所有试卷加载
       this.$ajax({
           method: "post",
-          url: "http://47.103.10.220:8010/paper/listAllPaper",
+          url: "http://120.26.186.88:8080/paper/listPublishPaper",
           dataType: "json",
           crossDomain: true,
           cache: false,
@@ -240,18 +353,37 @@
           this.tableData2 = resolve.data;
           //获取数组长度赋值给total
           this.total2 = resolve.data.length;
+          this.duration = resolve.data[0].duration;
           // this.peoLoading = false;
           console.log(this.total2);
           console.log(resolve.data);
+          console.log(this.duration);
       }, reject => {
           // this.peoLoading = true;
           console.log(reject);
       });
 
+      //公告管理
+        this.$ajax({
+            method: "post",
+            url: "http://120.26.186.88:8080/notice/listAllNotice",
+            dataType: "json",
+            crossDomain: true,
+            cache: false,
+        }).then(resolve => {
+            this.tableData4 = resolve.data;
+            //获取数组长度赋值给total
+            this.total4 = resolve.data.length;
+            console.log(this.tota3);
+            // console.log(resolve.data);
+        }, reject => {
+            console.log(reject);
+        });
+      
       //个人成绩
       this.$ajax({
           method: "post",
-          url: "http://47.103.10.220:8010/score/queryScoreByUser",
+          url: "http://120.26.186.88:8080/score/queryScoreByUser",
           dataType: "json",
           crossDomain: true,
           cache: false,
@@ -266,42 +398,208 @@
           console.log(reject);
       });
 
-      const h = this.$createElement;
-      this.$notify({
-        title: '17级软件工程导论通知',
-        message: h('i', { style: 'color: teal'}, '本周二将进行软件工程导论考试，请同学们抓紧时间复习！')
-      });
-    },
-    methods: {
-      //开始考试
-      beginTest(index, row) {
-        this.testing = true;
-        this. sureTest = false;
-        this.paperID = row.paperId;
-        console.log(row.paperId);
-        this.$ajax({
-            method: "post",
-            url: "http://47.103.10.220:8010/paperDetail/listPaperDetailByPaperId",
-            data: {
-              paperIdStr: row.paperId,
-            },
-            dataType: "json",
-            crossDomain: true,
-            cache: false,
-            transformRequest(obj){
+      //请求错题
+      this.$ajax({
+          method: "post",
+          url: "http://120.26.186.88:8080/wrong/listWrongById",
+          dataType: "json",
+          crossDomain: true,
+          cache: false,
+          transformRequest(obj){
                     var str = [];
                     for(var p in obj){
                         str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
                     }
                     return str.join("&");
                 },
+      }).then(resolve => {
+          this.tableData3 = resolve.data;
+          //获取数组长度赋值给total
+          this.total3 = resolve.data.length;
+          // this.peoLoading = false;
+          console.log(resolve.data);
+      }, reject => {
+          // this.peoLoading = true;
+          console.log(reject);
+      });
+    },
+    methods: {
+      //删除错题
+      deleteWrongQuestion(index,row){
+        this.$ajax({
+                method: "post",
+                url: "http://120.26.186.88:8080/wrong/deleteWrong",
+                data:{
+                    wrongIdStr:row.wrongId,
+                },
+                dataType: "json",
+                crossDomain: true,
+                cache: false,
+                transformRequest(obj){
+                    var str = [];
+                    for(var p in obj){
+                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                    }
+                    return str.join("&");
+                },
+            }).then(resolve => {
+               this.$ajax({
+                    method: "post",
+                    url: "http://120.26.186.88:8080/wrong/listWrongById",
+                    dataType: "json",
+                    crossDomain: true,
+                    cache: false,
+                    transformRequest(obj){
+                    var str = [];
+                    for(var p in obj){
+                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                    }
+                    return str.join("&");
+                },
+                }).then(resolve => {
+                    this.tableData3 = resolve.data;
+                    //获取数组长度赋值给total
+                    this.total3 = resolve.data.length;
+                    // this.peoLoading = false;
+                    console.log(this.total1);
+                    // console.log(resolve.data);
+                }, reject => {
+                    // this.peoLoading = true;
+                    console.log(reject);
+                });
+            }, reject => {
+                console.log(reject);
+            });
+      },
+      //开始考试
+      beginTest(index, row) {
+        this.testing = true;
+        this. sureTest = false;
+        this.paperID = row.paperId;
+        console.log(row.paperId);
+        //单选
+        this.$ajax({
+          method: "post",
+          // method: "get",
+          // url: "../../../static/testJSONdanxuan.json",
+          url: "http://120.26.186.88:8080/connect/listAllConnect",
+          dataType: "json",
+          data: {
+            paperIdStr: row.paperId,
+            exerciseTypeStr: 0,
+          },
+          crossDomain: true,
+          cache: false,
+          transformRequest(obj){
+            var str = [];
+            for(var p in obj){
+              str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+            }
+            return str.join("&");
+          },
         }).then(resolve => {
+          //题目渲染至页面之中
+          // this.question = resolve.data;
+          this.questionDanxuan = resolve.data;
+          if(this.questionDanxuan != null)
+            this.danxuanShow = true;
           console.log(resolve);
-          this.question = resolve.data;
-          // this.radioModel = resolve.data
+          // this.showPaper(pid);
         }, reject => {
-            // this.peoLoading = true;
-            console.log(reject);
+          console.log("题目获取失败！");
+        });
+        //判断
+        this.$ajax({
+          method: "post",
+          // method: "get",
+          // url: "../../../static/testJSONdanxuan.json",
+          url: "http://120.26.186.88:8080/connect/listAllConnect",
+          dataType: "json",
+          data: {
+            paperIdStr: row.paperId,
+            exerciseTypeStr: 1,
+          },
+          crossDomain: true,
+          cache: false,
+          transformRequest(obj){
+            var str = [];
+            for(var p in obj){
+              str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+            }
+            return str.join("&");
+          },
+        }).then(resolve => {
+          //题目渲染至页面之中
+          // this.question = resolve.data;
+          this.questionPanduan = resolve.data;
+          if(this.questionPanduan != null)
+            this.panduanShow = true;
+          console.log(resolve);
+          // this.showPaper(pid);
+        }, reject => {
+          console.log("题目获取失败！");
+        });
+        //填空
+        this.$ajax({
+          method: "post",
+          // method: "get",
+          // url: "../../../static/testJSONdanxuan.json",
+          url: "http://120.26.186.88:8080/connect/listAllConnect",
+          dataType: "json",
+          data: {
+            paperIdStr: row.paperId,
+            exerciseTypeStr: 2,
+          },
+          crossDomain: true,
+          cache: false,
+          transformRequest(obj){
+            var str = [];
+            for(var p in obj){
+              str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+            }
+            return str.join("&");
+          },
+        }).then(resolve => {
+          //题目渲染至页面之中
+          // this.question = resolve.data;
+          this.questionTiankong = resolve.data;
+          if(this.questionTiankong != null)
+            this.tiankongShow = true;
+          console.log(resolve);
+          // this.showPaper(pid);
+        }, reject => {
+          console.log("题目获取失败！");
+        });
+        //问答
+        this.$ajax({
+          method: "post",
+          // method: "get",
+          // url: "../../../static/testJSONdanxuan.json",
+          url: "http://120.26.186.88:8080/connect/listAllConnect",
+          dataType: "json",
+          data: {
+            paperIdStr: row.paperId,
+            exerciseTypeStr: 3,            
+          },
+          crossDomain: true,
+          cache: false,
+          transformRequest(obj){
+            var str = [];
+            for(var p in obj){
+              str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+            }
+            return str.join("&");
+          },
+        }).then(resolve => {
+          //题目渲染至页面之中
+          // this.question = resolve.data;
+          this.questionWenda = resolve.data;
+          if(this.questionWenda != null)
+            this.wendaShow = true;
+          console.log(resolve);
+          // this.showPaper(pid);
+        }, reject => {
+          console.log("题目获取失败！");
         });
       },
 
@@ -313,6 +611,15 @@
       current_change2(currentPage) {
         this.currentPage2 = currentPage;
       },
+      //错题集
+      current_change3(currentPage) {
+        this.currentPage3 = currentPage;
+      },
+      //公告
+      current_change4(currentPage) {
+        this.currentPage4 = currentPage;
+      },
+
       //选择
       handleRadioChange(chose, id){
         this.radioAnswer[id] = {index:id, value:chose};
@@ -328,7 +635,7 @@
               this.myScore = true;
               this.$ajax({
                 method: "post",
-                url: "http://47.103.10.220:8010/score/queryScoreByUser",
+                url: "http://120.26.186.88:8080/score/queryScoreByUser",
                 dataType: "json",
                 crossDomain: true,
                 cache: false,
@@ -338,53 +645,87 @@
                 this.total1 = resolve.data.length;
                 // this.peoLoading = false;
                 console.log(resolve.data);
-            }, reject => {
-                // this.peoLoading = true;
-                console.log(reject);
-            });
-          }
-        });
-        //算分
-        let right = 0;
-        for(let p=0; p<this.question.length; p++){
-          for(let q=0; q<this.radioAnswer.length; q++){
-            if(this.radioAnswer[q]!=undefined){
-              if(this.question[p].exerciseId == this.radioAnswer[q].index){
-                if(this.question[p].answer == this.radioAnswer[q].value){
-                  right += this.question[p].score;
+
+                for(var i = 0; i < this.questionDanxuan.length-1; i++) {
+                  const objEle = {'paperId': this.questionDanxuan[i].paperId,
+                                'paperDetailId': this.questionDanxuan[i].paperDetailId, 
+                                'solution': this.questionDanxuan[i].solution};
+                  this.solutionList.push(objEle);
                 }
-              }
-            }
-          }
-        }
-        console.log(right);
-        this.testing = true;
-        this. sureTest = false;
-        this.$ajax({
-            method: "post",
-            url: "http://47.103.10.220:8010/score/addScore",
-            data: {
-              paperIdStr: this.paperID,
-              markStr: right,
-            },
-            dataType: "json",
-            crossDomain: true,
-            cache: false,
-            transformRequest(obj){
+                for(var i = 0; i < this.questionPanduan.length-1; i++) {
+                  const objEle = {'paperId': this.questionPanduan[i].paperId,
+                                'paperDetailId': this.questionPanduan[i].paperDetailId, 
+                                'solution': this.questionPanduan[i].solution};
+                  this.solutionList.push(objEle);
+                }
+                for(var i = 0; i < this.questionTiankong.length-1; i++) {
+                  const objEle = {'paperId': this.questionTiankong[i].paperId,
+                                'paperDetailId': this.questionTiankong[i].paperDetailId, 
+                                'solution': this.questionTiankong[i].solution};
+                  this.solutionList.push(objEle);
+                }
+                for(var i = 0; i < this.questionWenda.length-1; i++) {
+                  const objEle = {'paperId': this.questionWenda[i].paperId,
+                                'paperDetailId': this.questionWenda[i].paperDetailId, 
+                                'solution': this.questionWenda[i].solution};
+                  this.solutionList.push(objEle);
+                }
+                // console.log(this.solutionList);
+                var list = JSON.stringify(this.solutionList);
+                console.log(list);
+
+                this.$ajax({
+                  method: "post",
+                  url: "http://120.26.186.88:8080/paperDetail/judgeQuestion",
+                  contentType : 'application/json',
+                  data: {
+                    // jsonString: this.solutionList,
+                    jsonString: list,
+                  },
+                  // dataType: "json",
+                  crossDomain: true,
+                  cache: false,
+                  transformRequest(obj){
                     var str = [];
                     for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
                     }
                     return str.join("&");
-                },
-        }).then(resolve => {
-          console.log(resolve.data);
-        }, reject => {
-            console.log(reject);
+                  },
+                }).then(resolve => {
+                  console.log("成绩为:");
+                  console.log(resolve);
+                  //请求成绩数据
+                  this.$ajax({
+                    method: "post",
+                    url: "http://120.26.186.88:8080/score/queryScoreByUser",
+                    dataType: "json",
+                    crossDomain: true,
+                    cache: false,
+                }).then(resolve => {
+                    this.tableData1 = resolve.data;
+                    //获取数组长度赋值给total
+                    this.total1 = resolve.data.length;
+                    // this.peoLoading = false;
+                    console.log(resolve.data);
+                }, reject => {
+                    // this.peoLoading = true;
+                    console.log(reject);
+                });
+                }, reject => {
+                  //上传失败
+                  console.log("上传失败");
+                });
+                // console.log(this.solutionList);
+              }, reject => {
+                // this.peoLoading = true;
+                console.log(reject);
+              });
+            }
         });
       },
-      //倒计时
-      timer(){
+      //计时
+      timer() {
       //秒针走动
         this.s=this.s+1;
         //秒进位分，秒归零
@@ -399,13 +740,40 @@
         }
         this.str=this.addZero(this.h)+":"+this.addZero(this.m)+":"+this.addZero(this.s);
         // console.log(this.str);
-        if(this.str == "02:00:00"){
+
+        var dur = this.duration;
+        // var dur = 10;
+        var hour = "0";
+        var min = "00";
+        // console.log(dur / 60);
+
+        if(dur % 60 == 0) {
+          hour = (dur/60).toString();
+        }
+        else {
+          //十分
+          if((dur / 60) >= 1 && (dur / 60) < 2) {
+            hour = "1";
+            min = (dur-60).toString();
+          }
+          else if(dur / 60 >= 2) {
+            hour = "2";
+            min = (dur-120).toString();
+          }
+          else 
+            min = dur.toString();
+        }
+        // console.log("0"+hour+":"+min+":"+"00");
+      
+        if(this.str == "0"+hour+":"+min+":"+"00"){
           this.$alert('请停止答题，前往“我的成绩”中查询你的成绩', '考试时间到！', {
             confirmButtonText: '确定',
             callback: action => {
-              submiteAnwser();
               this.testing = false;
               this.myScore = true;
+              this.s = 0;
+              this.m = 0;
+              this.h = 0;
             }
           });
           clearInterval(this.time);
@@ -495,6 +863,7 @@
         &.opacity
           opacity 0.4
           background lightslategrey
+     
   #title
     position absolute 
     // border 1px solid red
@@ -540,10 +909,25 @@
     top 112px
     left 15%
   }
+  #mis{
+    position absolute 
+    width 83%
+    top 112px
+    left 15%
+  }
+  #noti{
+    position absolute 
+    width 83%
+    top 112px
+    left 15%
+  }
   //头像
   #userHead {
     position absolute
     top 12%
     right 15%;
+  }
+  .pagination {
+      text-align: center;
   }
 </style>

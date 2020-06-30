@@ -23,10 +23,10 @@
         <mt-field label="密码" placeholder="请输入密码" type="password" v-model="stuPsw" :state="pswState" @keyup.enter.native="checkLogin"/>
         <mt-button type="primary" size="large" @click.native="checkLogin">登录</mt-button>
 
-        <div class="toggle-login">
+        <!-- <div class="toggle-login">
           <span @click="toRegister">没有账号？马上注册</span>
           <span @click="toFindPsw">忘记密码？</span>
-        </div>
+        </div> -->
       </div>
     <!--</transition>-->
 
@@ -77,10 +77,13 @@
   import HeaderTop from '../../components/HeaderTop/HeaderTop.vue'
   import {reqLogin, reqRegister, reqFindPsw} from '../../api'
   import {Toast, MessageBox} from 'mint-ui'
+  import { mapState, mapGetters } from 'vuex'
+  import {reqUpdateFeedbackStatus, reqFeedbackInfo} from '../../api'
   export default {
     name: "",
     data() {
       return {
+        power:this.$store.state.userInfo.power,
         showLogin: true,
         showRegister: false,
         showFindPsw:false,
@@ -113,8 +116,17 @@
         findNewPsw:'',
         findNewPswState:'',
         findNewPswConfirm:'',
-        findNewPswConfirmState:''
+        findNewPswConfirmState:'',
+        //用户信息
+        userInfor: []
       }
+    },
+    components:{
+      HeaderTop
+    },
+    computed:{
+      ...mapState(['userInfo']),
+      ...mapGetters(['unreadMsgCount'])
     },
     methods: {
       // 异步学生登录
@@ -122,8 +134,8 @@
         // 去个人中心界面
         console.log(this.sno);
         console.log(this.stuPsw);
-        if(this.sno == "admin"){
-          this.$ajax({
+        
+        this.$ajax({
             method: "post",
             url: "http://120.26.186.88:8080/user/login",
             data: {
@@ -140,45 +152,32 @@
                     }
                     return str.join("&");
                 },
-          }).then(resolve => {
-            console.log(resolve.data);
-            console.log("登录成功");
-            this.question = resolve.data;
-            this.$router.replace('/admin')
-            // this.radioModel = resolve.data
-          }, reject => {
-              // this.peoLoading = true;
-              console.log(reject);
-          });
-        }
-        else {
-          this.$ajax({
-            method: "post",
-            url: "http://120.26.186.88:8080/user/login",
-            data: {
-              username: this.sno,
-              password: this.stuPsw,
-            },
-            dataType: "json",
-            crossDomain: true,
-            cache: false,
-            transformRequest(obj){
-                    var str = [];
-                    for(var p in obj){
-                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    }
-                    return str.join("&");
-                },
-          }).then(resolve => {
-            console.log(resolve.data);
-            this.question = resolve.data;
-            this.$router.replace('/profile')
-            // this.radioModel = resolve.data
-          }, reject => {
-              // this.peoLoading = true;
-              console.log(reject);
-          });
-        }
+          }).then(
+            resolve=>{
+              //获取用户信息
+              this.$ajax({
+                method: "post",
+                url: "http://120.26.186.88:8080/user/listUserById",
+                dataType: "json",
+                crossDomain: true,
+                cache: false,
+              }).then(resolve => {
+                console.log(resolve.data[0]);
+                this.userInfor = resolve.data[0];
+                if(this.userInfor.power=="2")
+                  this.$router.replace('/admin');
+                else if(this.userInfor.power=="0")
+                  this.$router.replace('/Profile');
+                else
+                  this.$router.replace('/Teacher');
+              }, reject => {
+            // this.peoLoading = true;
+            console.log(reject);
+            })
+            },reject => {
+                    // this.peoLoading = true;
+                    console.log(reject);
+            });
       },
       //点击展示登录面板
       toLogin(){

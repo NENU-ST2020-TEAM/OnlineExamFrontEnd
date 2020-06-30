@@ -8,61 +8,90 @@
                 <span>TESTONLINE</span>
                 </a>
             </div>
-            <router-link :to="userInfo.sno ? '/profile/info' : '/login'" class="profile-link">
+            <a href="javascript:void(0)" class="profile-link" @click="personInfor=true">
                 <div class="user-info">
-                    <p class="user-info-top">{{userInfor.username}}</p>
+                <p class="user-info-top" >{{userInfor.username}}</p>
                 </div>
                 <div class="profile_image">
-                    <img :src="require('../../common/imgs/profile.jpg')" alt="学生头像">
+                <img :src="require('../../assets/Teacher.jpg')" alt="学生头像">
+                <!--<img src="../../common/imgs/profile.jpg" alt="头像" v-else>-->
                 </div>
-                <div class="user-info">
-                    <p class="user-info-top">欢迎您：</p>
-                </div>
-            </router-link>
+            </a>
         </section>
 
-        <!-- 侧边栏(导航) -->
+        <el-dialog title="个人信息" v-model="userInfor" :visible.sync="personInfor" :close-on-click-modal="false">
+            <img id="userHead" src="../../assets/Teacher.jpg" width="100px" height="100px" style="border-radius: 50px" />
+            <el-form  ref="userInfor" label-width="150px">
+                <el-form-item label="用户ID：">
+                <el-col :span="8">
+                    <span>{{userInfor.userId}}</span>
+                </el-col>
+                </el-form-item>
+                <el-form-item label="用户名：">
+                <el-col :span="8">
+                    <span>{{userInfor.username}}</span>
+                </el-col>
+                </el-form-item>
+                <el-form-item label="性别：">
+                <el-col :span="8">
+                    <span>{{userInfor.sex}}</span>
+                </el-col>
+                </el-form-item>
+                <el-form-item label="生日：">
+                <el-col :span="8">
+                    <span>{{userInfor.birthday}}</span>
+                </el-col>
+                </el-form-item>
+                <el-form-item label="权限：">
+                <el-col :span="8">
+                    <span>{{this.userPower}}</span>
+                </el-col>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
+    <!-- 侧边栏(导航) -->
         <div id="aside">
-            <!-- <el-aside id="el_aside"> -->
-                <el-row>
-                    <el-col :span="24">
-                        <el-menu default-active="1" background-color="#f5f5f5" active-text-color="#4ab8a1">
-                            <el-menu-item index="1" @click="allPaper = true; 
-                                                            questionShow = false; 
-                                                            noticeShow = false;
-                                                            allScore = false;
-                                                            allStudentScore = false">
-                                <i class="el-icon-user"></i>
-                                <span slot="title">试卷管理</span>
-                            </el-menu-item>
-                            <el-menu-item index="2" @click="allPaper = false; 
-                                                            questionShow = true; 
-                                                            noticeShow = false;
-                                                            allScore = false;
-                                                            allStudentScore = false">
-                                <i class="el-icon-tickets"></i>
-                                <span slot="title">题库管理</span>
-                            </el-menu-item>
-                            <el-menu-item index="3" @click="allPaper = false; 
-                                                            questionShow = false; 
-                                                            noticeShow = true;
-                                                            allScore = false;
-                                                            allStudentScore = false">
-                                <i class="el-icon-school"></i>
-                                <span slot="title">公告管理</span>
-                            </el-menu-item>
-                            <el-menu-item index="4" @click="allPaper = false; 
-                                                            questionShow = false; 
-                                                            noticeShow = false;
-                                                            allScore = true;
-                                                            allStudentScore = false">
-                                <i class="el-icon-school"></i>
-                                <span slot="title">成绩管理</span>
-                            </el-menu-item>
-                        </el-menu>
-                    </el-col>
-                </el-row>
-            <!-- </el-aside> -->
+        <!-- <el-aside id="el_aside"> -->
+            <el-row>
+                <el-col :span="24">
+                    <el-menu default-active="1" background-color="#f5f5f5" active-text-color="#4ab8a1">
+                        <el-menu-item index="1" @click="allPaper = true; 
+                                                        questionShow = false; 
+                                                        noticeShow = false;
+                                                        allScore = false;
+                                                        allStudentScore = false">
+                            <i class="el-icon-user"></i>
+                            <span slot="title">试卷管理</span>
+                        </el-menu-item>
+                        <el-menu-item index="2" @click="allPaper = false; 
+                                                        questionShow = true; 
+                                                        noticeShow = false;
+                                                        allScore = false;
+                                                        allStudentScore = false">
+                            <i class="el-icon-tickets"></i>
+                            <span slot="title">题库管理</span>
+                        </el-menu-item>
+                        <el-menu-item index="3" @click="allPaper = false; 
+                                                        questionShow = false; 
+                                                        noticeShow = true;
+                                                        allScore = false;
+                                                        allStudentScore = false">
+                            <i class="el-icon-school"></i>
+                            <span slot="title">公告管理</span>
+                        </el-menu-item>
+                        <el-menu-item index="4" @click="allPaper = false; 
+                                                        questionShow = false; 
+                                                        noticeShow = false;
+                                                        allScore = true;
+                                                        allStudentScore = false">
+                            <i class="el-icon-school"></i>
+                            <span slot="title">成绩管理</span>
+                        </el-menu-item>
+                    </el-menu>
+                </el-col>
+            </el-row>
+        <!-- </el-aside> -->
         </div>
 
         
@@ -98,7 +127,7 @@
                                     plain
                                     @click="changePaperName(scope.$index, scope.row);"></el-button>
                             </el-col>
-                            <el-col :span="7">
+                            <el-col :span="5">
                                 <el-button type="danger" 
                                 icon="el-icon-delete" 
                                 title="删除" 
@@ -149,7 +178,7 @@
                     <el-table-column align="center" prop="typeA" label="选项A" width="105"></el-table-column>
                     <el-table-column align="center" prop="typeB" label="选项B" width="105"></el-table-column>
                     <el-table-column align="center" prop="typeC" label="选项C" width="105"></el-table-column>
-                    <el-table-column align="center" prop="typeDr" label="选项D" width="105"></el-table-column>
+                    <el-table-column align="center" prop="typeD" label="选项D" width="105"></el-table-column>
                     <el-table-column align="center" prop="answer" label="答案/采分点1" width="105"></el-table-column>
                     <el-table-column align="center" prop="answer2" label="采分点2" width="105"></el-table-column>
                     <el-table-column align="center" prop="answer3" label="采分点3" width="105"></el-table-column>
@@ -231,7 +260,8 @@
             <!-- 公告管理 -->
             <el-card v-show="noticeShow">
                 <el-table :data="tableData3.slice((currentPage3-1)*pagesize,currentPage3*pagesize)" style="width: 100%" id="peoTable">
-                    <el-table-column width="80px" align="center" prop="noticeId" label="公告编号"></el-table-column>
+                    <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
+                    <!-- <el-table-column width="80px" align="center" prop="noticeId" label="公告编号"></el-table-column> -->
                     <el-table-column width="80px" align="center" prop="userId" label="发布者ID"></el-table-column>
                     <el-table-column align="center" prop="title" label="标题"></el-table-column>
                     <el-table-column align="center" prop="content" label="内容"></el-table-column>
@@ -245,9 +275,10 @@
             <!-- 成绩 -->
             <el-card v-show="allScore">
                 <el-table :data="tableData4.slice((currentPage4-1)*pagesize,currentPage4*pagesize)" style="width: 100%">
-                    <el-table-column align="center" prop="paperId" label="试卷编号"></el-table-column>
+                    <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
+                    <!-- <el-table-column align="center" prop="paperId" label="试卷编号"></el-table-column> -->
                     <el-table-column align="center" prop="paperName" label="试卷名称"></el-table-column>
-                    <el-table-column align="center" prop="operation" label="操作">
+                    <el-table-column align="center" prop="operation" label="所有考生成绩" width="120">
                         <template slot-scope="scope">
                             <el-button type="success" 
                                 icon="el-icon-search" 
@@ -255,12 +286,22 @@
                                 circle 
                                 plain
                                 @click="showAllScore(scope.$index, scope.row);"></el-button>
+                        </template>
+                        <!-- <el-button type="danger" icon="el-icon-delete" title="删除" @click="dele" plain>删除</el-button> -->
+                    </el-table-column> 
+                    <el-table-column align="center" prop="operation" label="不及格考生成绩" width="120">
+                        <template slot-scope="scope">
                             <el-button type="success" 
                                 icon="el-icon-search" 
                                 title="查看本卷不及格考生成绩" 
                                 circle 
                                 plain
                                 @click="searchfailScores(scope.$index, scope.row);"></el-button>
+                        </template>
+                        <!-- <el-button type="danger" icon="el-icon-delete" title="删除" @click="dele" plain>删除</el-button> -->
+                    </el-table-column>
+                    <el-table-column align="center" prop="operation" label="及格考生成绩" width="120">
+                        <template slot-scope="scope">
                             <el-button type="success" 
                                 icon="el-icon-search" 
                                 title="查看本卷及格考生成绩" 
@@ -272,13 +313,14 @@
                     </el-table-column>    
                 </el-table>
                 <div class="pagination">
-                        <el-pagination background layout="prev, pager, next" :total="total4" @current-change="current_change4" class="paginate"></el-pagination>
-                    </div>
+                    <el-pagination background layout="prev, pager, next" :total="total4" @current-change="current_change4" class="paginate"></el-pagination>
+                </div>
             </el-card>
 
             <!-- 根据试卷列出考生成绩信息 -->
             <el-card v-show="allStudentScore">
                 <el-table :data="tableData5.slice((currentPage5-1)*pagesize,currentPage5*pagesize)" style="width: 100%">
+                    <el-table-column align="center" type="index" label="序号" width="50"></el-table-column>
                     <el-table-column align="center" prop="userId" label="学生学号"></el-table-column>
                     <el-table-column align="center" prop="username" label="学生姓名"></el-table-column>
                     <el-table-column align="center" prop="mark" label="学生成绩"></el-table-column>    
@@ -308,7 +350,7 @@
                     <el-table-column align="center" prop="typeA" label="选项A"></el-table-column>
                     <el-table-column align="center" prop="typeB" label="选项B"></el-table-column>
                     <el-table-column align="center" prop="typeC" label="选项C"></el-table-column>
-                    <el-table-column align="center" prop="typeDr" label="选项D"></el-table-column>
+                    <el-table-column align="center" prop="typeD" label="选项D"></el-table-column>
                     <el-table-column align="center" prop="answer" label="答案/采分点1"></el-table-column>
                     <el-table-column align="center" prop="answer2" label="采分点2"></el-table-column>
                     <el-table-column align="center" prop="answer3" label="采分点3"></el-table-column>
@@ -620,8 +662,6 @@
                 <el-button type="primary" @click="outputPaper=true; selectShow=false; handInputShow=false">发布试卷</el-button>
             </span>
         </el-dialog>
-
-        
     </div>
 </template>
 
@@ -636,6 +676,7 @@ export default {
         return {
             sno:this.$store.state.userInfo.sno,
             isSelect:false,
+            personInfor: false,
             //一页表中的数据记录条数
             pagesize: 10,
             //试卷管理
@@ -655,16 +696,16 @@ export default {
             }],
             handQuestion: false,
             handQuestionInput: [{
-                questionType: '',
-                questionContext: '',
-                choiceA: '',
-                choiceB: '',
-                choiceC: '',
-                choiceD: '',
-                questionAnswerKeguan: '',
-                questionAnswerZhuguan1: '',
-                questionAnswerZhuguan2: '',
-                questionAnswerZhuguan3: '',
+                questionType: "",
+                questionContext: "",
+                choiceA: "",
+                choiceB: "",
+                choiceC: "",
+                choiceD: "",
+                questionAnswerKeguan: "",
+                questionAnswerZhuguan1: "",
+                questionAnswerZhuguan2: "",
+                questionAnswerZhuguan3: "",
                 questionCount: ''
             }],
             questionDanxuan: [],
@@ -735,7 +776,8 @@ export default {
             total5: 0,
 
             //用户信息
-            userInfor: []
+            userInfor: [],
+            userPower: "",
 
         }
     },
@@ -776,6 +818,7 @@ export default {
         },
         //搜索试卷
         searchPapers() {
+            // console.log(this.searchPaper);
             this.$ajax({
                 method: "post",
                 url: "http://120.26.186.88:8080/paper/queryPaperName",
@@ -1046,48 +1089,28 @@ export default {
 
         //录入题目上传 
         submihandQuestion() {
+            console.log(this.handQuestionInput);
             if((this.handQuestionInput.questionType)=="3") {
-                console.log(this.handQuestionInput.questionType);
-                this.$ajax({
-                    method: "post",
-                    url: "http://120.26.186.88:8080/paperDetail/addPaperDetail",
-                    data: {
-                        paperIdStr: this.paperIDback,
-                        exerciseTypeStr: this.handQuestionInput.questionType,
-                        contentStr: this.handQuestionInput.questionContext,
-                        typeAStr: null,
-                        typeBStr: null,
-                        typeCStr: null,
-                        typeDStr: null,
-                        answerStr: this.handQuestionInput.questionAnswerZhuguan1,
-                        answerStr2: this.handQuestionInput.questionAnswerZhuguan2,
-                        answerStr3: this.handQuestionInput.questionAnswerZhuguan3,
-                        scoreStr: this.handQuestionInput.questionCount,
-                    },
-                    dataType: "json",
-                    crossDomain: true,
-                    cache: false,
-                    transformRequest(obj){
-                        var str = [];
-                        for(var p in obj){
-                            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                        }
-                        return str.join("&");
-                    },
-                }).then(resolve => {
-                    this.questionDetail = resolve.data;
-                    console.log("当前试卷编号为：");
-                    console.log(this.paperIDback);
-                    console.log(this.questionDetail);
+                //只有一个
+                if(this.handQuestionInput.questionAnswerZhuguan1 != undefined && this.handQuestionInput.questionAnswerZhuguan2 == undefined && this.handQuestionInput.questionAnswerZhuguan3 == undefined) {
+                    console.log(1);
                     this.$ajax({
                         method: "post",
-                        // url: "http://120.26.186.88:8080/connect/addConnect?paperIdStr="+this.paperIDback+"&exerciseTypeStr="+this.questionDetail,
-                        url: "http://120.26.186.88:8080/connect/addConnect",
-                        dataType: "json",
+                        url: "http://120.26.186.88:8080/paperDetail/addPaperDetail",
                         data: {
                             paperIdStr: this.paperIDback,
-                            paperDetailIdStr: this.questionDetail,
+                            exerciseTypeStr: this.handQuestionInput.questionType,
+                            contentStr: this.handQuestionInput.questionContext,
+                            typeAStr: "",
+                            typeBStr: "",
+                            typeCStr: "",
+                            typeDStr: "",
+                            answerStr: this.handQuestionInput.questionAnswerZhuguan1,
+                            answer2: "这个字段为空",
+                            answer3: "这个字段为空",
+                            scoreStr: this.handQuestionInput.questionCount,
                         },
+                        dataType: "json",
                         crossDomain: true,
                         cache: false,
                         transformRequest(obj){
@@ -1098,19 +1121,172 @@ export default {
                             return str.join("&");
                         },
                     }).then(resolve => {
-                        //调用显示试卷
-                        this.showPaper(this.paperIDback);
-                        //提交之后 表单清空
-                        this.handQuestionInput = {brand_right: 0};
-                        console.log("绑定成功");
+                        this.questionDetail = resolve.data;
+                        console.log("当前试卷编号为：");
+                        console.log(this.paperIDback);
+                        console.log(this.questionDetail);
+                        this.$ajax({
+                            method: "post",
+                            // url: "http://120.26.186.88:8080/connect/addConnect?paperIdStr="+this.paperIDback+"&exerciseTypeStr="+this.questionDetail,
+                            url: "http://120.26.186.88:8080/connect/addConnect",
+                            dataType: "json",
+                            data: {
+                                paperIdStr: this.paperIDback,
+                                paperDetailIdStr: this.questionDetail,
+                            },
+                            crossDomain: true,
+                            cache: false,
+                            transformRequest(obj){
+                                var str = [];
+                                for(var p in obj){
+                                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                                }
+                                return str.join("&");
+                            },
+                        }).then(resolve => {
+                            //调用显示试卷
+                            this.showPaper(this.paperIDback);
+                            //提交之后 表单清空
+                            this.handQuestionInput = {brand_right: 0};
+                            console.log("绑定成功");
+                        }, reject => {
+                            console.log("题目创建失败！");
+                        });
                     }, reject => {
-                        console.log("题目创建失败！");
+                        console.log("题目创建失败了！");
                     });
-                }, reject => {
-                    console.log("题目创建失败了！");
-                });
+                }
+                else if(this.handQuestionInput.questionAnswerZhuguan1 != undefined && this.handQuestionInput.questionAnswerZhuguan2 != undefined && this.handQuestionInput.questionAnswerZhuguan3 == undefined) {
+                    console.log(2);
+                    this.$ajax({
+                        method: "post",
+                        url: "http://120.26.186.88:8080/paperDetail/addPaperDetail",
+                        data: {
+                            paperIdStr: this.paperIDback,
+                            exerciseTypeStr: this.handQuestionInput.questionType,
+                            contentStr: this.handQuestionInput.questionContext,
+                            typeAStr: "",
+                            typeBStr: "",
+                            typeCStr: "",
+                            typeDStr: "",
+                            answerStr: this.handQuestionInput.questionAnswerZhuguan1,
+                            answer2: this.handQuestionInput.questionAnswerZhuguan2,
+                            answer3: "这个字段为空",
+                            scoreStr: this.handQuestionInput.questionCount,
+                        },
+                        dataType: "json",
+                        crossDomain: true,
+                        cache: false,
+                        transformRequest(obj){
+                            var str = [];
+                            for(var p in obj){
+                                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                            }
+                            return str.join("&");
+                        },
+                    }).then(resolve => {
+                        this.questionDetail = resolve.data;
+                        console.log("当前试卷编号为：");
+                        console.log(this.paperIDback);
+                        console.log(this.questionDetail);
+                        this.$ajax({
+                            method: "post",
+                            // url: "http://120.26.186.88:8080/connect/addConnect?paperIdStr="+this.paperIDback+"&exerciseTypeStr="+this.questionDetail,
+                            url: "http://120.26.186.88:8080/connect/addConnect",
+                            dataType: "json",
+                            data: {
+                                paperIdStr: this.paperIDback,
+                                paperDetailIdStr: this.questionDetail,
+                            },
+                            crossDomain: true,
+                            cache: false,
+                            transformRequest(obj){
+                                var str = [];
+                                for(var p in obj){
+                                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                                }
+                                return str.join("&");
+                            },
+                        }).then(resolve => {
+                            //调用显示试卷
+                            this.showPaper(this.paperIDback);
+                            //提交之后 表单清空
+                            this.handQuestionInput = {brand_right: 0};
+                            console.log("绑定成功");
+                        }, reject => {
+                            console.log("题目创建失败！");
+                        });
+                    }, reject => {
+                        console.log("题目创建失败了！");
+                    });
+                }
+                else if(this.handQuestionInput.questionAnswerZhuguan1 != undefined && this.handQuestionInput.questionAnswerZhuguan2 != undefined && this.handQuestionInput.questionAnswerZhuguan3 != undefined) {
+                    console.log(3);
+                    this.$ajax({
+                        method: "post",
+                        url: "http://120.26.186.88:8080/paperDetail/addPaperDetail",
+                        data: {
+                            paperIdStr: this.paperIDback,
+                            exerciseTypeStr: this.handQuestionInput.questionType,
+                            contentStr: this.handQuestionInput.questionContext,
+                            typeAStr: "",
+                            typeBStr: "",
+                            typeCStr: "",
+                            typeDStr: "",
+                            answerStr: this.handQuestionInput.questionAnswerZhuguan1,
+                            answer2: this.handQuestionInput.questionAnswerZhuguan2,
+                            answer3: this.handQuestionInput.questionAnswerZhuguan3,
+                            scoreStr: this.handQuestionInput.questionCount,
+                        },
+                        dataType: "json",
+                        crossDomain: true,
+                        cache: false,
+                        transformRequest(obj){
+                            var str = [];
+                            for(var p in obj){
+                                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                            }
+                            return str.join("&");
+                        },
+                    }).then(resolve => {
+                        this.questionDetail = resolve.data;
+                        console.log("当前试卷编号为：");
+                        console.log(this.paperIDback);
+                        console.log(this.questionDetail);
+                        this.$ajax({
+                            method: "post",
+                            // url: "http://120.26.186.88:8080/connect/addConnect?paperIdStr="+this.paperIDback+"&exerciseTypeStr="+this.questionDetail,
+                            url: "http://120.26.186.88:8080/connect/addConnect",
+                            dataType: "json",
+                            data: {
+                                paperIdStr: this.paperIDback,
+                                paperDetailIdStr: this.questionDetail,
+                            },
+                            crossDomain: true,
+                            cache: false,
+                            transformRequest(obj){
+                                var str = [];
+                                for(var p in obj){
+                                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                                }
+                                return str.join("&");
+                            },
+                        }).then(resolve => {
+                            //调用显示试卷
+                            this.showPaper(this.paperIDback);
+                            //提交之后 表单清空
+                            this.handQuestionInput = {brand_right: 0};
+                            console.log("绑定成功");
+                        }, reject => {
+                            console.log("题目创建失败！");
+                        });
+                    }, reject => {
+                        console.log("题目创建失败了！");
+                    });
+                }
+                console.log(this.handQuestionInput.questionType);
             }
-            //判断
+            // 判断
             else {
                 this.$ajax({
                     method: "post",
@@ -1173,12 +1349,6 @@ export default {
             }
         },
 
-        // 设置时间格式
-        // dateChangebirthday(val) {
-        //     console.log(val);
-        //     this.outputTime.beginDate = val;
-        // },
-
         //发布考试时间
         sureSubmit() {
             console.log(this.outputTime);
@@ -1187,17 +1357,14 @@ export default {
             console.log(testBegin);
             console.log(testEnd);
             console.log(this.paperIDback);
+            console.log(this.outputTime.duration);
             this.$ajax({
                 method: "post",
-                // url: "http://120.26.186.88:8080/paper/publisPaper",
+                url: "http://120.26.186.88:8080/paper/publishPaper?paperIdStr="+this.paperIDback
+                                                                            +"&beginTime="+testBegin
+                                                                            +"&endTime="+testEnd
+                                                                            +"&duration="+this.outputTime.duration,
                 dataType: "json",
-                // data: {
-                //     paperIdStr: this.paperIDback,
-                //     beginTime: testBegin,
-                //     endTime: testEnd,
-                //     duration: this.outputTime.duration
-                // },
-                url: "http://120.26.186.88:8080/paper/publisPaper?paperIdStr="+this.paperIDback+"&beginTime="+testBegin+"&endTime="+testEnd+"&duration="+this.outputTime.duration,
                 crossDomain: true,
                 cache: false,
                 transformRequest(obj){
@@ -1212,6 +1379,7 @@ export default {
                 // 发布试卷后 填写试卷名称清空
                 this.selectPaperName = {brand_right: 0};
                 this.handPaperName = {brand_right: 0};
+                //题库更新
                 this.$ajax({
                     method: "post",
                     url: "http://120.26.186.88:8080/paperDetail/listAllPaperDetail",
@@ -1224,6 +1392,25 @@ export default {
                     this.total2 = resolve.data.length;
                     // this.peoLoading = false;
                     console.log(resolve);
+                    // console.log(resolve.data);
+                }, reject => {
+                    // this.peoLoading = true;
+                    console.log(reject);
+                });
+                //试卷更新
+                this.$ajax({
+                    method: "post",
+                    url: "http://120.26.186.88:8080/paper/listAllPaper",
+                    dataType: "json",
+                    crossDomain: true,
+                    cache: false,
+                }).then(resolve => {
+                    this.tableData1 = resolve.data;
+                    console.log(resolve.data);
+                    //获取数组长度赋值给total
+                    this.total1 = resolve.data.length;
+                    // this.peoLoading = false;
+                    console.log(this.total1);
                     // console.log(resolve.data);
                 }, reject => {
                     // this.peoLoading = true;
@@ -1412,6 +1599,7 @@ export default {
 
         //搜索题目
         searchQuestionBtn() {
+            console.log(this.searchQuestion);
             this.$ajax({
                 method: "post",
                 url: "http://120.26.186.88:8080/paperDetail/queryPaperDetail",
@@ -1484,57 +1672,115 @@ export default {
 
         //新增题目
         addQuestion() {
+            console.log(this.handQuestionInput);
             if((this.handQuestionInput.questionType)=="3") {
-                console.log(this.handQuestionInput.questionType);
-                this.$ajax({
-                    method: "post",
-                    url: "http://120.26.186.88:8080/paperDetail/addPaperDetail",
-                    data: {
-                        paperIdStr: this.paperIDback,
-                        exerciseTypeStr: this.handQuestionInput.questionType,
-                        contentStr: this.handQuestionInput.questionContext,
-                        typeAStr: null,
-                        typeBStr: null,
-                        typeCStr: null,
-                        typeDStr: null,
-                        answerStr: this.handQuestionInput.questionAnswerZhuguan1,
-                        answerStr2: this.handQuestionInput.questionAnswerZhuguan2,
-                        answerStr3: this.handQuestionInput.questionAnswerZhuguan3,
-                        scoreStr: this.handQuestionInput.questionCount,
-                    },
-                    dataType: "json",
-                    crossDomain: true,
-                    cache: false,
-                    transformRequest(obj){
-                        var str = [];
-                        for(var p in obj){
-                            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                        }
-                        return str.join("&");
-                    },
-                }).then(resolve => {
-                    console.log(resolve.data);
+                console.log(this.handQuestionInput.questionAnswerZhuguan1);
+                console.log(this.handQuestionInput.questionAnswerZhuguan2);
+                console.log(this.handQuestionInput.questionAnswerZhuguan3);
+                //只有一个
+                if(this.handQuestionInput.questionAnswerZhuguan1 != undefined && this.handQuestionInput.questionAnswerZhuguan2 == undefined && this.handQuestionInput.questionAnswerZhuguan3 == undefined) {
+                    console.log(1);
                     this.$ajax({
                         method: "post",
-                        url: "http://120.26.186.88:8080/paperDetail/listAllPaperDetail",
+                        url: "http://120.26.186.88:8080/paperDetail/addPaperDetail",
+                        data: {
+                            paperIdStr: this.paperIDback,
+                            exerciseTypeStr: this.handQuestionInput.questionType,
+                            contentStr: this.handQuestionInput.questionContext,
+                            typeAStr: "",
+                            typeBStr: "",
+                            typeCStr: "",
+                            typeDStr: "",
+                            answerStr: this.handQuestionInput.questionAnswerZhuguan1,
+                            answer2: "这个字段为空",
+                            answer3: "这个字段为空",
+                            scoreStr: this.handQuestionInput.questionCount,
+                        },
                         dataType: "json",
                         crossDomain: true,
                         cache: false,
+                        transformRequest(obj){
+                            var str = [];
+                            for(var p in obj){
+                                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                            }
+                            return str.join("&");
+                        },
                     }).then(resolve => {
-                        this.tableData2 = resolve.data;
-                        //获取数组长度赋值给total
-                        this.total2 = resolve.data.length;
-                        // this.peoLoading = false;
-                        console.log(this.total2);
-                        // console.log(resolve.data);
-                        //提交之后 表单清空
-                        this.handQuestionInput = {brand_right: 0};
+                        this.questionDetail = resolve.data;
                     }, reject => {
-                        console.log(reject);
+                        console.log("题目创建失败了！");
                     });
-                }, reject => {
-                    console.log("题目创建失败了！");
-                });
+                }
+                else if(this.handQuestionInput.questionAnswerZhuguan1 != undefined && this.handQuestionInput.questionAnswerZhuguan2 != undefined && this.handQuestionInput.questionAnswerZhuguan3 == undefined) {
+                    console.log(2);
+                    this.$ajax({
+                        method: "post",
+                        url: "http://120.26.186.88:8080/paperDetail/addPaperDetail",
+                        data: {
+                            paperIdStr: this.paperIDback,
+                            exerciseTypeStr: this.handQuestionInput.questionType,
+                            contentStr: this.handQuestionInput.questionContext,
+                            typeAStr: "",
+                            typeBStr: "",
+                            typeCStr: "",
+                            typeDStr: "",
+                            answerStr: this.handQuestionInput.questionAnswerZhuguan1,
+                            answer2: this.handQuestionInput.questionAnswerZhuguan2,
+                            answer3: "这个字段为空",
+                            scoreStr: this.handQuestionInput.questionCount,
+                        },
+                        dataType: "json",
+                        crossDomain: true,
+                        cache: false,
+                        transformRequest(obj){
+                            var str = [];
+                            for(var p in obj){
+                                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                            }
+                            return str.join("&");
+                        },
+                    }).then(resolve => {
+                        this.questionDetail = resolve.data;
+                    }, reject => {
+                        console.log("题目创建失败了！");
+                    });
+                }
+                else if(this.handQuestionInput.questionAnswerZhuguan1 != undefined && this.handQuestionInput.questionAnswerZhuguan2 != undefined && this.handQuestionInput.questionAnswerZhuguan3 != undefined) {
+                    console.log(3);
+                    this.$ajax({
+                        method: "post",
+                        url: "http://120.26.186.88:8080/paperDetail/addPaperDetail",
+                        data: {
+                            paperIdStr: this.paperIDback,
+                            exerciseTypeStr: this.handQuestionInput.questionType,
+                            contentStr: this.handQuestionInput.questionContext,
+                            typeAStr: "",
+                            typeBStr: "",
+                            typeCStr: "",
+                            typeDStr: "",
+                            answerStr: this.handQuestionInput.questionAnswerZhuguan1,
+                            answer2: this.handQuestionInput.questionAnswerZhuguan2,
+                            answer3: this.handQuestionInput.questionAnswerZhuguan3,
+                            scoreStr: this.handQuestionInput.questionCount,
+                        },
+                        dataType: "json",
+                        crossDomain: true,
+                        cache: false,
+                        transformRequest(obj){
+                            var str = [];
+                            for(var p in obj){
+                                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                            }
+                            return str.join("&");
+                        },
+                    }).then(resolve => {
+                        this.questionDetail = resolve.data;
+                    }, reject => {
+                        console.log("题目创建失败了！");
+                    });
+                }
+                console.log(this.handQuestionInput.questionType);
             }
             //判断
             else {
@@ -1600,6 +1846,12 @@ export default {
         }).then(resolve => {
             console.log(resolve);
             this.userInfor = resolve.data[0];
+            if(this.userInfor.power == 0)
+                this.userPower = "学生";
+            else if(this.userInfor.power == 1)
+                this.userPower = "教师";
+            else 
+                this.userPower = "管理员";
         }, reject => {
             // this.peoLoading = true;
             console.log(reject);
@@ -1780,6 +2032,12 @@ export default {
     #header_inner_text a {
         color: white;
         text-decoration: none;
+    }
+    //头像
+    #userHead {
+        position absolute
+        top 12%
+        right 15%;
     }
     /* 侧边栏 */
     #aside {

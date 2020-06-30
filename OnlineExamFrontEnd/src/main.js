@@ -8,6 +8,7 @@ import store from './store'
 import axios from 'axios'
 Vue.prototype.$ajax=axios
 axios.defaults.withCredentials=true;
+// axios.defaults.baseURL = '/apis'
 //按需引入Muse-UI组件
 import { Radio, Checkbox, TextField, Button, Icon } from 'muse-ui';
 // import 'muse-ui/lib/styles/base.less';

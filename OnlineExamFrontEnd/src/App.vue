@@ -169,7 +169,7 @@
   // 整个应用组件的样式
   #app
     width 100%
-    min-height 180vh
+    min-height 175vh
     background #f5f5f5
 /*    .v-enter
       opacity 0
