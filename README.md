@@ -1,2 +1,2 @@
 # OnlineExamFrontEnd
-Front End of OnlineExamSystem for Software Quality Assurance and Testing course, Spring 2020, NENU 
+Front End of OnlineExamSystem, Software Testing and Quality Assurance course, 2020 Spring, NENU
